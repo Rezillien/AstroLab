@@ -1,14 +1,22 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System;
 
 
 using System.Collections.Generic;       //Allows us to use Lists. 
 
 public class GameManager : MonoBehaviour
 {
+    public enum Turn
+    {
+        Player,
+        Enemies
+    };
 
     public static GameManager instance = null;              //Static instance of GameManager which allows it to be accessed by any other script.
-    private StartBoardManager boardScript;                       //Store a reference to our BoardManager which will set up the level.                                 //Current level number, expressed in game as "Day 1".
+    private Map map;                       //Store a reference to our BoardManager which will set up the level.                                 //Current level number, expressed in game as "Day 1".
+    private MapGenerator mapGenerator;
+
+    private Turn turn;
 
     //Awake is always called before any Start functions
     void Awake()
@@ -29,7 +37,8 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         //Get a component reference to the attached BoardManager script
-        boardScript = GetComponent<StartBoardManager>();
+        map = GetComponent<Map>();
+        mapGenerator = GetComponent<TmpMapGenerator>();
 
         //Call the InitGame function to initialize the first level 
         InitGame();
@@ -39,12 +48,35 @@ public class GameManager : MonoBehaviour
     void InitGame()
     {
         //Call the SetupScene function of the BoardManager script, pass it current level number.
-        boardScript.SetupScene();
+        map.Setup(mapGenerator);
+        turn = Turn.Player; //player starts
     }
 
-    public StartBoardManager getBoard()
+    public Map GetMap()
     {
-        return boardScript;
+        return map;
+    }
+
+    public bool IsPlayerTurn()
+    {
+        return turn == Turn.Player;
+    }
+
+    public bool IsEnemyTurn()
+    {
+        return turn == Turn.Enemies;
+    }
+
+    public void EndEnemyTurn()
+    {
+        turn = Turn.Player;
+    }
+
+    public void EndPlayerTurn()
+    {
+        turn = Turn.Enemies;
+
+        EndEnemyTurn(); //temporary
     }
 
     //Update is called every frame.
