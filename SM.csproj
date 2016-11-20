@@ -66,17 +66,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\DoorController.cs" />
-    <Compile Include="Assets\Scripts\FloorTileController.cs" />
+    <Compile Include="Assets\Scripts\FloorControllers\FloorTileController.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\Map.cs" />
-    <Compile Include="Assets\Scripts\MapGenerator.cs" />
-    <Compile Include="Assets\Scripts\MazeMapGenerator.cs" />
+    <Compile Include="Assets\Scripts\MapGenerators\MapGenerator.cs" />
+    <Compile Include="Assets\Scripts\MapGenerators\MazeMapGenerator.cs" />
+    <Compile Include="Assets\Scripts\MapGenerators\TmpMapGenerator.cs" />
     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
     <Compile Include="Assets\Scripts\Prefabs.cs" />
     <Compile Include="Assets\Scripts\SmoothTransition.cs" />
-    <Compile Include="Assets\Scripts\TmpMapGenerator.cs" />
-    <Compile Include="Assets\Scripts\WallTileController.cs" />
+    <Compile Include="Assets\Scripts\WallControllers\DoorController.cs" />
+    <Compile Include="Assets\Scripts\WallControllers\WallTileController.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

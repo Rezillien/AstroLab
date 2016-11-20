@@ -38,7 +38,7 @@ public class MazeMapGenerator : MapGenerator
 
         BacktrackCarve(map, wallLayerTiles, wallTilePrefabs);
 
-        if(doorChance > 0.0f)
+        if (doorChance > 0.0f)
         {
             for (int x = 0; x < width; ++x)
             {
@@ -54,7 +54,7 @@ public class MazeMapGenerator : MapGenerator
                 }
             }
         }
-        
+
         for (int x = 0; x < width; ++x)
         {
             for (int y = 0; y < height; ++y)
@@ -79,12 +79,17 @@ public class MazeMapGenerator : MapGenerator
         GameObject south = wallLayerTiles[x, y - 1];
         GameObject west = wallLayerTiles[x - 1, y];
         GameObject east = wallLayerTiles[x + 1, y];
-        if(north != null && south != null)
+
+        if (north != null && south != null)
         {
+            if (west != null || east != null) return;
+
             wallLayerTiles[x, y] = RandomizeTile(horizontalDoorPrefabs);
         }
-        else if(west != null && east != null)
+        else if (west != null && east != null)
         {
+            if (north != null || south != null) return;
+
             wallLayerTiles[x, y] = RandomizeTile(verticalDoorPrefabs);
         }
     }
@@ -99,14 +104,14 @@ public class MazeMapGenerator : MapGenerator
         int[] order = { 0, 1, 2, 3 };
         Shuffle(order);
 
-        foreach(int i in order)
+        foreach (int i in order)
         {
             int nx = x + moves[i, 0];
             int ny = y + moves[i, 1];
 
-            if(map.IsInsideBounds(nx, ny))
+            if (map.IsInsideBounds(nx, ny))
             {
-                if(wallLayerTiles[nx, ny] != null)
+                if (wallLayerTiles[nx, ny] != null)
                 {
                     wallLayerTiles[nx, ny] = null;
                     wallLayerTiles[x + moves[i, 0] / 2, y + moves[i, 1] / 2] = null;
