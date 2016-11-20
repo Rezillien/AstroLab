@@ -20,7 +20,7 @@ public class Map : MonoBehaviour
         mapGenerator.Generate(this);
     }
 
-    private bool IsInsideBounds(int x, int y)
+    public bool IsInsideBounds(int x, int y)
     {
         return x >= 0 && y >= 0 && x < width && y < height;
     }

@@ -13,8 +13,6 @@ public class GameManager : MonoBehaviour
     };
 
     public static GameManager instance = null;              //Static instance of GameManager which allows it to be accessed by any other script.
-    private Map map;                       //Store a reference to our BoardManager which will set up the level.                                 //Current level number, expressed in game as "Day 1".
-    private MapGenerator mapGenerator;
 
     private Turn turn;
 
@@ -36,10 +34,6 @@ public class GameManager : MonoBehaviour
         //Sets this to not be destroyed when reloading scene
         DontDestroyOnLoad(gameObject);
 
-        //Get a component reference to the attached BoardManager script
-        map = GetComponent<Map>();
-        mapGenerator = GetComponent<TmpMapGenerator>();
-
         //Call the InitGame function to initialize the first level 
         InitGame();
     }
@@ -48,13 +42,23 @@ public class GameManager : MonoBehaviour
     void InitGame()
     {
         //Call the SetupScene function of the BoardManager script, pass it current level number.
-        map.Setup(mapGenerator);
+        GetMap().Setup(GetMapGenerator());
         turn = Turn.Player; //player starts
+    }
+
+    public MapGenerator GetMapGenerator()
+    {
+        return GetComponent<MapGenerator>();
+    }
+
+    public Prefabs GetPrefabs()
+    {
+        return GetComponent<Prefabs>();
     }
 
     public Map GetMap()
     {
-        return map;
+        return GetComponent<Map>();
     }
 
     public bool IsPlayerTurn()

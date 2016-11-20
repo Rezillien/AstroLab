@@ -71,7 +71,9 @@
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\Map.cs" />
     <Compile Include="Assets\Scripts\MapGenerator.cs" />
+    <Compile Include="Assets\Scripts\MazeMapGenerator.cs" />
     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
+    <Compile Include="Assets\Scripts\Prefabs.cs" />
     <Compile Include="Assets\Scripts\SmoothTransition.cs" />
     <Compile Include="Assets\Scripts\TmpMapGenerator.cs" />
     <Compile Include="Assets\Scripts\WallTileController.cs" />

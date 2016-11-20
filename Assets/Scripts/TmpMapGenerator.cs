@@ -9,10 +9,6 @@ public class TmpMapGenerator : MapGenerator
 {
     public int minRoomSize = 5;
     //prefabs set in the inspector
-    public GameObject[] wallTilePrefabs;
-    public GameObject[] floorTilePrefabs;
-    public GameObject[] verticalDoorTilePrefabs;
-    public GameObject[] horizontalDoorTilePrefabs;
 
     private GameObject RandomizeTile(GameObject[] tiles)
     {
@@ -21,9 +17,16 @@ public class TmpMapGenerator : MapGenerator
 
     public override void Generate(Map map)
     {
+        Prefabs prefabs = GameManager.instance.GetPrefabs();
+
         int width = map.width;
         int height = map.height;
-        Debug.Log(width);
+
+        GameObject[] wallTilePrefabs = prefabs.wallTilePrefabs;
+        GameObject[] floorTilePrefabs = prefabs.floorTilePrefabs;
+        GameObject[] verticalDoorTilePrefabs = prefabs.verticalDoorTilePrefabs;
+        GameObject[] horizontalDoorTilePrefabs = prefabs.horizontalDoorTilePrefabs;
+        
         GameObject[,] floorLayerTiles = new GameObject[width, height];
         GameObject[,] wallLayerTiles = new GameObject[width, height];
 
@@ -33,9 +36,6 @@ public class TmpMapGenerator : MapGenerator
             {
                 floorLayerTiles[x, y] = RandomizeTile(floorTilePrefabs);
                 wallLayerTiles[x, y] = null;
-
-                map.SetFloorTile(x, y, null);
-                map.SetWallTile(x, y, null);
             }
         }
 
