@@ -1,7 +1,7 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2015
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spaceship Mechanics", "Spaceship Mechanics.csproj", "{9E012883-E135-4FAD-D700-DAA73F4AEB40}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2008
+
+Project("{F1FC3684-28FB-0F87-4FAC-987D43BB6F4F}") = "Spaceship Mechanics", "Assembly-CSharp.csproj", "{F6E17AB1-DAEC-4A22-84C6-C20F1E2E2973}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,12 +9,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9E012883-E135-4FAD-D700-DAA73F4AEB40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9E012883-E135-4FAD-D700-DAA73F4AEB40}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9E012883-E135-4FAD-D700-DAA73F4AEB40}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9E012883-E135-4FAD-D700-DAA73F4AEB40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6E17AB1-DAEC-4A22-84C6-C20F1E2E2973}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6E17AB1-DAEC-4A22-84C6-C20F1E2E2973}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6E17AB1-DAEC-4A22-84C6-C20F1E2E2973}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6E17AB1-DAEC-4A22-84C6-C20F1E2E2973}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Assembly-CSharp.csproj
 	EndGlobalSection
 EndGlobal
