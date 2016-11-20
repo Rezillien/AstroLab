@@ -5,8 +5,8 @@ using Random = UnityEngine.Random;
 
 public class Map : MonoBehaviour
 {
-    public int width = 18;
-    public int height = 14;
+    public int width;
+    public int height;
 
     private GameObject[,] floorLayerTiles;
     private GameObject[,] wallLayerTiles;
@@ -20,9 +20,14 @@ public class Map : MonoBehaviour
         mapGenerator.Generate(this);
     }
 
+    private bool IsInsideBounds(int x, int y)
+    {
+        return x >= 0 && y >= 0 && x < width && y < height;
+    }
+
     public bool HasCollider(int x, int y)
     {
-        if (x < 0 || y < 0 || x >= width || y >= height) return false;
+        if (!IsInsideBounds(x, y)) return false;
 
         GameObject tile = wallLayerTiles[x, y];
         if (tile == null)
@@ -39,7 +44,7 @@ public class Map : MonoBehaviour
 
     public bool Interact(int x, int y, GameObject player)
     {
-        if (x < 0 || y < 0 || x >= width || y >= height) return false;
+        if (!IsInsideBounds(x, y)) return false;
 
         GameObject tile = wallLayerTiles[x, y];
         if (tile == null) return false;
@@ -53,23 +58,47 @@ public class Map : MonoBehaviour
     //sets reference
     public void SetFloorTile(int x, int y, GameObject tile)
     {
+        if (!IsInsideBounds(x, y)) return;
+
+        RemoveFloorTile(x, y);
         floorLayerTiles[x, y] = tile;
     }
 
     public void SetWallTile(int x, int y, GameObject tile)
     {
+        if (!IsInsideBounds(x, y)) return;
+
+        RemoveWallTile(x, y);
         wallLayerTiles[x, y] = tile;
     }
 
     // instantiates!!! and sets reference
     public void CreateFloorTile(int x, int y, GameObject tile)
     {
-        floorLayerTiles[x, y] = Instantiate(tile, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
+        SetFloorTile(x, y, Instantiate(tile, new Vector3(x, y, 0f), Quaternion.identity) as GameObject);
     }
 
     public void CreateWallTile(int x, int y, GameObject tile)
     {
-        wallLayerTiles[x, y] = Instantiate(tile, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
+        SetWallTile(x, y, Instantiate(tile, new Vector3(x, y, 0f), Quaternion.identity) as GameObject);
+    }
+
+    public void RemoveFloorTile(int x, int y)
+    {
+        if (!IsInsideBounds(x, y)) return;
+        if (floorLayerTiles[x, y] == null) return;
+
+        Destroy(floorLayerTiles[x, y]);
+        floorLayerTiles[x, y] = null;
+    }
+
+    public void RemoveWallTile(int x, int y)
+    {
+        if (!IsInsideBounds(x, y)) return;
+        if (wallLayerTiles[x, y] == null) return;
+
+        Destroy(wallLayerTiles[x, y]);
+        wallLayerTiles[x, y] = null;
     }
 
     public void Setup(MapGenerator mapGenerator)

@@ -3,58 +3,11 @@ using System;
 
 public class PlayerMovement : MonoBehaviour
 {
-    //Class for representing animation, linearly interpolates position on request
-    class Animation
-    {
-        public float totalDuration;
-        public float animationTimeLeft;
-        public int initialX;
-        public int initialY;
-        public int finalX;
-        public int finalY;
-
-        public Animation(float total, int ix, int iy, int fx, int fy)
-        {
-            totalDuration = total;
-            animationTimeLeft = total;
-
-            initialX = ix;
-            initialY = iy;
-            finalX = fx;
-            finalY = fy;
-        }
-
-        public void Update()
-        {
-            animationTimeLeft -= Time.deltaTime;
-        }
-
-        public bool IsFinished()
-        {
-            return animationTimeLeft < 0.0f;
-        }
-
-        //lerp
-        public Vector3 GetInterpolatedPosition()
-        {
-            float animationTime = totalDuration - animationTimeLeft;
-            if (animationTime > totalDuration) animationTime = totalDuration;
-
-            float t = animationTime / totalDuration;
-
-            float x = initialX + (finalX - initialX) * t;
-            float y = initialY + (finalY - initialY) * t;
-            float z = 0.0f;
-
-            return new Vector3(x, y, z);
-        }
-    }
-
     // position
     int x;
     int y;
 
-    Animation moveAnimation;
+    SmoothTransition moveAnimation;
 
     void Start()
     {
@@ -87,7 +40,7 @@ public class PlayerMovement : MonoBehaviour
 
         if ((dx != 0 || dy != 0) && !map.HasCollider(x + dx, y + dy))
         {
-            moveAnimation = new Animation(0.5f, x, y, x + dx, y + dy);
+            moveAnimation = new SmoothTransition(x, y, x + dx, y + dy, 0.25f);
             x += dx;
             y += dy;
 
@@ -127,8 +80,6 @@ public class PlayerMovement : MonoBehaviour
     {
         GameManager gm = GameManager.instance;
         if (!gm.IsPlayerTurn()) return;
-
-        Map map = gm.GetMap();
 
         if (moveAnimation == null)
         {

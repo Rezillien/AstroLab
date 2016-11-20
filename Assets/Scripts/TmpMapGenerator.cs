@@ -23,7 +23,7 @@ public class TmpMapGenerator : MapGenerator
     {
         int width = map.width;
         int height = map.height;
-
+        Debug.Log(width);
         GameObject[,] floorLayerTiles = new GameObject[width, height];
         GameObject[,] wallLayerTiles = new GameObject[width, height];
 
