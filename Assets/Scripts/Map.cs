@@ -8,14 +8,14 @@ public class Map : MonoBehaviour
     public int width;
     public int height;
 
-    private GameObject[,] floorLayerTiles;
-    private GameObject[,] wallLayerTiles;
+    private GameObject[,] floorTileLayer;
+    private GameObject[,] wallTileLayer;
 
     //generates map using given generator
     void GenerateMap(MapGenerator mapGenerator)
     {
-        floorLayerTiles = new GameObject[width, height];
-        wallLayerTiles = new GameObject[width, height];
+        floorTileLayer = new GameObject[width, height];
+        wallTileLayer = new GameObject[width, height];
 
         mapGenerator.Generate(this);
     }
@@ -27,9 +27,7 @@ public class Map : MonoBehaviour
 
     public bool HasCollider(int x, int y)
     {
-        if (!IsInsideBounds(x, y)) return false;
-
-        GameObject tile = wallLayerTiles[x, y];
+        GameObject tile = GetWallTile(x, y);
         if (tile == null)
             return false;
 
@@ -44,9 +42,7 @@ public class Map : MonoBehaviour
 
     public bool Interact(int x, int y, GameObject player)
     {
-        if (!IsInsideBounds(x, y)) return false;
-
-        GameObject tile = wallLayerTiles[x, y];
+        GameObject tile = GetWallTile(x, y);
         if (tile == null) return false;
 
         WallTileController controller = tile.GetComponent<WallTileController>();
@@ -56,20 +52,23 @@ public class Map : MonoBehaviour
     }
 
     //sets reference
-    public void SetFloorTile(int x, int y, GameObject tile)
+    private void SetTile(int x, int y, GameObject tile, GameObject[,] layer)
     {
         if (!IsInsideBounds(x, y)) return;
 
-        RemoveFloorTile(x, y);
-        floorLayerTiles[x, y] = tile;
+        RemoveTile(x, y, layer);
+        layer[x, y] = tile;
+    }
+
+    //sets reference
+    public void SetFloorTile(int x, int y, GameObject tile)
+    {
+        SetTile(x, y, tile, floorTileLayer);
     }
 
     public void SetWallTile(int x, int y, GameObject tile)
     {
-        if (!IsInsideBounds(x, y)) return;
-
-        RemoveWallTile(x, y);
-        wallLayerTiles[x, y] = tile;
+        SetTile(x, y, tile, wallTileLayer);
     }
 
     // instantiates!!! and sets reference
@@ -83,34 +82,76 @@ public class Map : MonoBehaviour
         SetWallTile(x, y, Instantiate(tile, new Vector3(x, y, 0f), Quaternion.identity) as GameObject);
     }
 
-    public void RemoveFloorTile(int x, int y)
+    private void RemoveTile(int x, int y, GameObject[,] layer)
     {
         if (!IsInsideBounds(x, y)) return;
-        if (floorLayerTiles[x, y] == null) return;
+        if (layer[x, y] == null) return;
 
-        Destroy(floorLayerTiles[x, y]);
-        floorLayerTiles[x, y] = null;
+        Destroy(layer[x, y]);
+        layer[x, y] = null;
+    }
+
+    public void RemoveFloorTile(int x, int y)
+    {
+        RemoveTile(x, y, floorTileLayer);
     }
 
     public void RemoveWallTile(int x, int y)
     {
-        if (!IsInsideBounds(x, y)) return;
-        if (wallLayerTiles[x, y] == null) return;
+        RemoveTile(x, y, wallTileLayer);
+    }
 
-        Destroy(wallLayerTiles[x, y]);
-        wallLayerTiles[x, y] = null;
+    private GameObject GetTile(int x, int y, GameObject[,] layer)
+    {
+        if (!IsInsideBounds(x, y)) return null;
+
+        return layer[x, y];
     }
 
     public GameObject GetFloorTile(int x, int y)
     {
-        if (!IsInsideBounds(x, y)) return null;
-        return floorLayerTiles[x, y];
+        return GetTile(x, y, floorTileLayer);
     }
 
     public GameObject GetWallTile(int x, int y)
     {
-        if (!IsInsideBounds(x, y)) return null;
-        return wallLayerTiles[x, y];
+        return GetTile(x, y, wallTileLayer);
+    }
+
+    public GameObject GetFloorTileNorthOf(int x, int y)
+    {
+        return GetTile(x, DirectionHelper.NorthOf(y), floorTileLayer);
+    }
+    public GameObject GetWallTileNorthOf(int x, int y)
+    {
+        return GetTile(x, DirectionHelper.NorthOf(y), wallTileLayer);
+    }
+
+    public GameObject GetFloorTileSouthOf(int x, int y)
+    {
+        return GetTile(x, DirectionHelper.SouthOf(y), floorTileLayer);
+    }
+    public GameObject GetWallTileSouthOf(int x, int y)
+    {
+        return GetTile(x, DirectionHelper.SouthOf(y), wallTileLayer);
+    }
+
+    public GameObject GetFloorTileWestOf(int x, int y)
+    {
+        return GetTile(DirectionHelper.WestOf(x), y, floorTileLayer);
+    }
+    public GameObject GetWallTileWestOf(int x, int y)
+    {
+        return GetTile(DirectionHelper.WestOf(x), y, wallTileLayer);
+    }
+
+    public GameObject GetFloorTileEastOf(int x, int y)
+    {
+        return GetTile(DirectionHelper.EastOf(x), y, floorTileLayer);
+    }
+    public GameObject GetWallTileEastOf(int x, int y)
+    {
+        return GetTile(DirectionHelper.EastOf(x), y, wallTileLayer);
     }
 
     public void Setup(MapGenerator mapGenerator)

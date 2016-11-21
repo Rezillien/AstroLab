@@ -87,10 +87,10 @@ public class MazeMapGenerator : MapGenerator
     {
         if (x <= 1 || y <= 1 || x >= map.width || y >= map.height) return;
 
-        GameObject north = wallLayerTiles[x, y + 1];
-        GameObject south = wallLayerTiles[x, y - 1];
-        GameObject west = wallLayerTiles[x - 1, y];
-        GameObject east = wallLayerTiles[x + 1, y];
+        GameObject north = wallLayerTiles[x, DirectionHelper.NorthOf(y)];
+        GameObject south = wallLayerTiles[x, DirectionHelper.SouthOf(y)];
+        GameObject west = wallLayerTiles[DirectionHelper.WestOf(x), y];
+        GameObject east = wallLayerTiles[DirectionHelper.EastOf(x), y];
 
         if (north != null && south != null)
         {

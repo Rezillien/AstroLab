@@ -27,10 +27,10 @@ public class ConnectedWallController : WallTileController
         Map map = GameManager.instance.GetMap();
 
         int spriteId = 0;
-        GameObject north = map.GetWallTile(x, y + 1);
-        GameObject east = map.GetWallTile(x + 1, y);
-        GameObject south = map.GetWallTile(x, y - 1);
-        GameObject west = map.GetWallTile(x - 1, y);
+        GameObject north = map.GetWallTileNorthOf(x, y);
+        GameObject east = map.GetWallTileEastOf(x, y);
+        GameObject south = map.GetWallTileSouthOf(x, y);
+        GameObject west = map.GetWallTileWestOf(x, y);
         if (north != null)
         {
             spriteId += 1;
