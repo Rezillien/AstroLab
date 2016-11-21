@@ -19,7 +19,7 @@ public class MazeMapGenerator : MapGenerator
         int width = map.width;
         int height = map.height;
 
-        GameObject[] wallTilePrefabs = prefabs.wallTilePrefabs;
+        GameObject wallTilePrefab = prefabs.wallTilePrefabs[0];
         GameObject[] floorTilePrefabs = prefabs.floorTilePrefabs;
         GameObject[] verticalDoorTilePrefabs = prefabs.verticalDoorTilePrefabs;
         GameObject[] horizontalDoorTilePrefabs = prefabs.horizontalDoorTilePrefabs;
@@ -32,11 +32,11 @@ public class MazeMapGenerator : MapGenerator
             for (int y = 0; y < height; ++y)
             {
                 floorLayerTiles[x, y] = RandomizeTile(floorTilePrefabs);
-                wallLayerTiles[x, y] = RandomizeTile(wallTilePrefabs);
+                wallLayerTiles[x, y] = wallTilePrefab;
             }
         }
 
-        BacktrackCarve(map, wallLayerTiles, wallTilePrefabs);
+        BacktrackCarve(map, wallLayerTiles);
 
         if (doorChance > 0.0f)
         {
@@ -69,6 +69,18 @@ public class MazeMapGenerator : MapGenerator
                 }
             }
         }
+
+        for (int x = 0; x < width; ++x)
+        {
+            for (int y = 0; y < height; ++y)
+            {
+                GameObject wallTile = map.GetWallTile(x, y);
+                if(wallTile != null)
+                {
+                    wallTile.GetComponent<WallTileController>().UpdateSprite(x, y);
+                }
+            }
+        }
     }
 
     private void TryPlaceDoor(Map map, GameObject[,] wallLayerTiles, GameObject[] horizontalDoorPrefabs, GameObject[] verticalDoorPrefabs, int x, int y)
@@ -94,12 +106,12 @@ public class MazeMapGenerator : MapGenerator
         }
     }
 
-    private void BacktrackCarve(Map map, GameObject[,] wallLayerTiles, GameObject[] wallPrefabs)
+    private void BacktrackCarve(Map map, GameObject[,] wallLayerTiles)
     {
-        BacktrackCarve(map, wallLayerTiles, wallPrefabs, 1, 1);
+        BacktrackCarve(map, wallLayerTiles, 1, 1);
     }
 
-    private void BacktrackCarve(Map map, GameObject[,] wallLayerTiles, GameObject[] wallPrefabs, int x, int y)
+    private void BacktrackCarve(Map map, GameObject[,] wallLayerTiles, int x, int y)
     {
         int[] order = { 0, 1, 2, 3 };
         Shuffle(order);
@@ -116,7 +128,7 @@ public class MazeMapGenerator : MapGenerator
                     wallLayerTiles[nx, ny] = null;
                     wallLayerTiles[x + moves[i, 0] / 2, y + moves[i, 1] / 2] = null;
 
-                    BacktrackCarve(map, wallLayerTiles, wallPrefabs, nx, ny);
+                    BacktrackCarve(map, wallLayerTiles, nx, ny);
                 }
             }
         }

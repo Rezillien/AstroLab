@@ -101,6 +101,18 @@ public class Map : MonoBehaviour
         wallLayerTiles[x, y] = null;
     }
 
+    public GameObject GetFloorTile(int x, int y)
+    {
+        if (!IsInsideBounds(x, y)) return null;
+        return floorLayerTiles[x, y];
+    }
+
+    public GameObject GetWallTile(int x, int y)
+    {
+        if (!IsInsideBounds(x, y)) return null;
+        return wallLayerTiles[x, y];
+    }
+
     public void Setup(MapGenerator mapGenerator)
     {
         GenerateMap(mapGenerator);
