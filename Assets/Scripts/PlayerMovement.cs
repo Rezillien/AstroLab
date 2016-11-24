@@ -38,9 +38,9 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown("down")) dy = -1;
         if (Input.GetKeyDown("right")) dx = 1;
 
-        if ((dx != 0 || dy != 0) && !map.HasCollider(x + dx, y + dy))
+        if ((dx != 0 || dy != 0) && !map.HasCollider(new Coords2(x + dx, y + dy)))
         {
-            moveAnimation = new SmoothTransition(x, y, x + dx, y + dy, 0.25f);
+            moveAnimation = new SmoothTransition(new Coords2(x, y), new Coords2(x + dx, y + dy), 0.25f);
             x += dx;
             y += dy;
 
@@ -65,7 +65,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (dx != 0 || dy != 0)
         {
-            if (map.Interact(x + dx, y + dy, gameObject))
+            if (map.Interact(new Coords2(x + dx, y + dy), gameObject))
             {
                 return true;
             }

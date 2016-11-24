@@ -20,14 +20,14 @@ public class Map : MonoBehaviour
         mapGenerator.Generate(this);
     }
 
-    public bool IsInsideBounds(int x, int y)
+    public bool IsInsideBounds(Coords2 coords)
     {
-        return x >= 0 && y >= 0 && x < width && y < height;
+        return coords.x >= 0 && coords.y >= 0 && coords.x < width && coords.y < height;
     }
 
-    public bool HasCollider(int x, int y)
+    public bool HasCollider(Coords2 coords)
     {
-        GameObject tile = GetWallTile(x, y);
+        GameObject tile = GetWallTile(coords);
         if (tile == null)
             return false;
 
@@ -40,9 +40,9 @@ public class Map : MonoBehaviour
         return controller.HasCollider();
     }
 
-    public bool Interact(int x, int y, GameObject player)
+    public bool Interact(Coords2 coords, GameObject player)
     {
-        GameObject tile = GetWallTile(x, y);
+        GameObject tile = GetWallTile(coords);
         if (tile == null) return false;
 
         WallTileController controller = tile.GetComponent<WallTileController>();
@@ -52,106 +52,106 @@ public class Map : MonoBehaviour
     }
 
     //sets reference
-    private void SetTile(int x, int y, GameObject tile, GameObject[,] layer)
+    private void SetTile(Coords2 coords, GameObject tile, GameObject[,] layer)
     {
-        if (!IsInsideBounds(x, y)) return;
+        if (!IsInsideBounds(coords)) return;
 
-        RemoveTile(x, y, layer);
-        layer[x, y] = tile;
+        RemoveTile(coords, layer);
+        layer[coords.x, coords.y] = tile;
     }
 
     //sets reference
-    public void SetFloorTile(int x, int y, GameObject tile)
+    public void SetFloorTile(Coords2 coords, GameObject tile)
     {
-        SetTile(x, y, tile, floorTileLayer);
+        SetTile(coords, tile, floorTileLayer);
     }
 
-    public void SetWallTile(int x, int y, GameObject tile)
+    public void SetWallTile(Coords2 coords, GameObject tile)
     {
-        SetTile(x, y, tile, wallTileLayer);
+        SetTile(coords, tile, wallTileLayer);
     }
 
     // instantiates!!! and sets reference
-    public void CreateFloorTile(int x, int y, GameObject tile)
+    public void CreateFloorTile(Coords2 coords, GameObject tile)
     {
-        SetFloorTile(x, y, Instantiate(tile, new Vector3(x, y, 0f), Quaternion.identity) as GameObject);
+        SetFloorTile(coords, Instantiate(tile, new Vector3(coords.x, coords.y, 0f), Quaternion.identity) as GameObject);
     }
 
-    public void CreateWallTile(int x, int y, GameObject tile)
+    public void CreateWallTile(Coords2 coords, GameObject tile)
     {
-        SetWallTile(x, y, Instantiate(tile, new Vector3(x, y, 0f), Quaternion.identity) as GameObject);
+        SetWallTile(coords, Instantiate(tile, new Vector3(coords.x, coords.y, 0f), Quaternion.identity) as GameObject);
     }
 
-    private void RemoveTile(int x, int y, GameObject[,] layer)
+    private void RemoveTile(Coords2 coords, GameObject[,] layer)
     {
-        if (!IsInsideBounds(x, y)) return;
-        if (layer[x, y] == null) return;
-
-        Destroy(layer[x, y]);
-        layer[x, y] = null;
+        if (!IsInsideBounds(coords)) return;
+        if (layer[coords.x, coords.y] == null) return;
+        
+        Destroy(layer[coords.x, coords.y]);
+        layer[coords.x, coords.y] = null;
     }
 
-    public void RemoveFloorTile(int x, int y)
+    public void RemoveFloorTile(Coords2 coords)
     {
-        RemoveTile(x, y, floorTileLayer);
+        RemoveTile(coords, floorTileLayer);
     }
 
-    public void RemoveWallTile(int x, int y)
+    public void RemoveWallTile(Coords2 coords)
     {
-        RemoveTile(x, y, wallTileLayer);
+        RemoveTile(coords, wallTileLayer);
     }
 
-    private GameObject GetTile(int x, int y, GameObject[,] layer)
+    private GameObject GetTile(Coords2 coords, GameObject[,] layer)
     {
-        if (!IsInsideBounds(x, y)) return null;
+        if (!IsInsideBounds(coords)) return null;
 
-        return layer[x, y];
-    }
-
-    public GameObject GetFloorTile(int x, int y)
-    {
-        return GetTile(x, y, floorTileLayer);
+        return layer[coords.x, coords.y];
     }
 
-    public GameObject GetWallTile(int x, int y)
+    public GameObject GetFloorTile(Coords2 coords)
     {
-        return GetTile(x, y, wallTileLayer);
+        return GetTile(coords, floorTileLayer);
     }
 
-    public GameObject GetFloorTileNorthOf(int x, int y)
+    public GameObject GetWallTile(Coords2 coords)
     {
-        return GetTile(x, DirectionHelper.NorthOf(y), floorTileLayer);
-    }
-    public GameObject GetWallTileNorthOf(int x, int y)
-    {
-        return GetTile(x, DirectionHelper.NorthOf(y), wallTileLayer);
+        return GetTile(coords, wallTileLayer);
     }
 
-    public GameObject GetFloorTileSouthOf(int x, int y)
+    public GameObject GetFloorTileNorthOf(Coords2 coords)
     {
-        return GetTile(x, DirectionHelper.SouthOf(y), floorTileLayer);
+        return GetTile(DirectionHelper.NorthOf(coords), floorTileLayer);
     }
-    public GameObject GetWallTileSouthOf(int x, int y)
+    public GameObject GetWallTileNorthOf(Coords2 coords)
     {
-        return GetTile(x, DirectionHelper.SouthOf(y), wallTileLayer);
-    }
-
-    public GameObject GetFloorTileWestOf(int x, int y)
-    {
-        return GetTile(DirectionHelper.WestOf(x), y, floorTileLayer);
-    }
-    public GameObject GetWallTileWestOf(int x, int y)
-    {
-        return GetTile(DirectionHelper.WestOf(x), y, wallTileLayer);
+        return GetTile(DirectionHelper.NorthOf(coords), wallTileLayer);
     }
 
-    public GameObject GetFloorTileEastOf(int x, int y)
+    public GameObject GetFloorTileSouthOf(Coords2 coords)
     {
-        return GetTile(DirectionHelper.EastOf(x), y, floorTileLayer);
+        return GetTile(DirectionHelper.SouthOf(coords), floorTileLayer);
     }
-    public GameObject GetWallTileEastOf(int x, int y)
+    public GameObject GetWallTileSouthOf(Coords2 coords)
     {
-        return GetTile(DirectionHelper.EastOf(x), y, wallTileLayer);
+        return GetTile(DirectionHelper.SouthOf(coords), wallTileLayer);
+    }
+
+    public GameObject GetFloorTileWestOf(Coords2 coords)
+    {
+        return GetTile(DirectionHelper.WestOf(coords), floorTileLayer);
+    }
+    public GameObject GetWallTileWestOf(Coords2 coords)
+    {
+        return GetTile(DirectionHelper.WestOf(coords), wallTileLayer);
+    }
+
+    public GameObject GetFloorTileEastOf(Coords2 coords)
+    {
+        return GetTile(DirectionHelper.EastOf(coords), floorTileLayer);
+    }
+    public GameObject GetWallTileEastOf(Coords2 coords)
+    {
+        return GetTile(DirectionHelper.EastOf(coords), wallTileLayer);
     }
 
     public void Setup(MapGenerator mapGenerator)

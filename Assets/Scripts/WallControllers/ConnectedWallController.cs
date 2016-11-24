@@ -21,16 +21,16 @@ public class ConnectedWallController : WallTileController
         return true;
     }
 
-    public override void UpdateSprite(int x, int y)
+    public override void UpdateSprite(Coords2 coords)
     {
         SpriteSet sprites = gameObject.GetComponent<SpriteSet>();
         Map map = GameManager.instance.GetMap();
 
         int spriteId = 0;
-        GameObject north = map.GetWallTileNorthOf(x, y);
-        GameObject east = map.GetWallTileEastOf(x, y);
-        GameObject south = map.GetWallTileSouthOf(x, y);
-        GameObject west = map.GetWallTileWestOf(x, y);
+        GameObject north = map.GetWallTileNorthOf(coords);
+        GameObject east = map.GetWallTileEastOf(coords);
+        GameObject south = map.GetWallTileSouthOf(coords);
+        GameObject west = map.GetWallTileWestOf(coords);
         if (north != null)
         {
             spriteId += 1;

@@ -6,20 +6,16 @@ class SmoothTransition
 {
     public float totalDuration;
     public float animationTimeLeft;
-    public int initialX;
-    public int initialY;
-    public int finalX;
-    public int finalY;
+    public Coords2 initialCoords;
+    public Coords2 finalCoords;
 
-    public SmoothTransition(int ix, int iy, int fx, int fy, float total)
+    public SmoothTransition(Coords2 _initialCoords, Coords2 _finalCoords, float _totalDuration)
     {
-        totalDuration = total;
-        animationTimeLeft = total;
+        totalDuration = _totalDuration;
+        animationTimeLeft = _totalDuration;
 
-        initialX = ix;
-        initialY = iy;
-        finalX = fx;
-        finalY = fy;
+        initialCoords = _initialCoords;
+        finalCoords = _finalCoords;
     }
 
     public void Update()
@@ -40,8 +36,8 @@ class SmoothTransition
 
         float t = animationTime / totalDuration;
 
-        float x = initialX + (finalX - initialX) * t;
-        float y = initialY + (finalY - initialY) * t;
+        float x = initialCoords.x + (finalCoords.x - initialCoords.x) * t;
+        float y = initialCoords.y + (finalCoords.y - initialCoords.y) * t;
         float z = 0.0f;
 
         return new Vector3(x, y, z);

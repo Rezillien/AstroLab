@@ -28,7 +28,7 @@ public class WallTileController : MonoBehaviour
         return false;
     }
 
-    public virtual void UpdateSprite(int x, int y)
+    public virtual void UpdateSprite(Coords2 coords)
     {
 
     }

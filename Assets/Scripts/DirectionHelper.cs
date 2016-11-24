@@ -3,20 +3,20 @@ using System.Collections;
 
 static public class DirectionHelper {
 
-    static public int NorthOf(int y)
+    static public Coords2 NorthOf(Coords2 coords)
     {
-        return y + 1;
+        return coords + new Coords2(0, 1);
     }
-    static public int SouthOf(int y)
+    static public Coords2 SouthOf(Coords2 coords)
     {
-        return y - 1;
+        return coords + new Coords2(0, -1);
     }
-    static public int WestOf(int x)
+    static public Coords2 WestOf(Coords2 coords)
     {
-        return x - 1;
+        return coords + new Coords2(-1, 0);
     }
-    static public int EastOf(int x)
+    static public Coords2 EastOf(Coords2 coords)
     {
-        return x + 1;
+        return coords + new Coords2(1, 0);
     }
 }

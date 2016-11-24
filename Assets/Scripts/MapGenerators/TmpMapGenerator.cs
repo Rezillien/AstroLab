@@ -98,12 +98,12 @@ public class TmpMapGenerator : MapGenerator
             for (int y = 0; y < height; ++y)
             {
                 GameObject floorToInstantiate = floorLayerTiles[x, y];
-                map.CreateFloorTile(x, y, floorToInstantiate);
+                map.CreateFloorTile(new Coords2(x, y), floorToInstantiate);
 
                 GameObject wallToInstantiate = wallLayerTiles[x, y];
                 if (wallToInstantiate != null)
                 {
-                    map.CreateWallTile(x, y, wallToInstantiate);
+                    map.CreateWallTile(new Coords2(x, y), wallToInstantiate);
                 }
             }
         }

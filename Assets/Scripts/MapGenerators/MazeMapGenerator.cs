@@ -49,7 +49,7 @@ public class MazeMapGenerator : MapGenerator
                     float r = Random.Range(0.0f, 1.0f);
                     if (r < doorChance)
                     {
-                        TryPlaceDoor(map, wallLayerTiles, horizontalDoorTilePrefabs, verticalDoorTilePrefabs, x, y);
+                        TryPlaceDoor(map, wallLayerTiles, horizontalDoorTilePrefabs, verticalDoorTilePrefabs, new Coords2(x, y));
                     }
                 }
             }
@@ -60,12 +60,12 @@ public class MazeMapGenerator : MapGenerator
             for (int y = 0; y < height; ++y)
             {
                 GameObject floorToInstantiate = floorLayerTiles[x, y];
-                map.CreateFloorTile(x, y, floorToInstantiate);
+                map.CreateFloorTile(new Coords2(x, y), floorToInstantiate);
 
                 GameObject wallToInstantiate = wallLayerTiles[x, y];
                 if (wallToInstantiate != null)
                 {
-                    map.CreateWallTile(x, y, wallToInstantiate);
+                    map.CreateWallTile(new Coords2(x, y), wallToInstantiate);
                 }
             }
         }
@@ -74,61 +74,66 @@ public class MazeMapGenerator : MapGenerator
         {
             for (int y = 0; y < height; ++y)
             {
-                GameObject wallTile = map.GetWallTile(x, y);
+                GameObject wallTile = map.GetWallTile(new Coords2(x, y));
                 if(wallTile != null)
                 {
-                    wallTile.GetComponent<WallTileController>().UpdateSprite(x, y);
+                    wallTile.GetComponent<WallTileController>().UpdateSprite(new Coords2(x, y));
                 }
             }
         }
     }
 
-    private void TryPlaceDoor(Map map, GameObject[,] wallLayerTiles, GameObject[] horizontalDoorPrefabs, GameObject[] verticalDoorPrefabs, int x, int y)
+    private void TryPlaceDoor(Map map, GameObject[,] wallLayerTiles, GameObject[] horizontalDoorPrefabs, GameObject[] verticalDoorPrefabs, Coords2 coords)
     {
-        if (x <= 1 || y <= 1 || x >= map.width || y >= map.height) return;
+        if (coords.x <= 1 || coords.y <= 1 || coords.x >= map.width || coords.y >= map.height) return;
 
-        GameObject north = wallLayerTiles[x, DirectionHelper.NorthOf(y)];
-        GameObject south = wallLayerTiles[x, DirectionHelper.SouthOf(y)];
-        GameObject west = wallLayerTiles[DirectionHelper.WestOf(x), y];
-        GameObject east = wallLayerTiles[DirectionHelper.EastOf(x), y];
+        Coords2 northCoords = DirectionHelper.NorthOf(coords);
+        Coords2 southCoords = DirectionHelper.SouthOf(coords);
+        Coords2 westCoords = DirectionHelper.WestOf(coords);
+        Coords2 eastCoords = DirectionHelper.EastOf(coords);
+
+        GameObject north = wallLayerTiles[northCoords.x, northCoords.y];
+        GameObject south = wallLayerTiles[southCoords.x, southCoords.y];
+        GameObject west = wallLayerTiles[westCoords.x, westCoords.y];
+        GameObject east = wallLayerTiles[eastCoords.x, eastCoords.y];
 
         if (north != null && south != null)
         {
             if (west != null || east != null) return;
 
-            wallLayerTiles[x, y] = RandomizeTile(horizontalDoorPrefabs);
+            wallLayerTiles[coords.x, coords.y] = RandomizeTile(horizontalDoorPrefabs);
         }
         else if (west != null && east != null)
         {
             if (north != null || south != null) return;
 
-            wallLayerTiles[x, y] = RandomizeTile(verticalDoorPrefabs);
+            wallLayerTiles[coords.x, coords.y] = RandomizeTile(verticalDoorPrefabs);
         }
     }
 
     private void BacktrackCarve(Map map, GameObject[,] wallLayerTiles)
     {
-        BacktrackCarve(map, wallLayerTiles, 1, 1);
+        BacktrackCarve(map, wallLayerTiles, new Coords2(1, 1));
     }
 
-    private void BacktrackCarve(Map map, GameObject[,] wallLayerTiles, int x, int y)
+    private void BacktrackCarve(Map map, GameObject[,] wallLayerTiles, Coords2 coords)
     {
         int[] order = { 0, 1, 2, 3 };
         Shuffle(order);
 
         foreach (int i in order)
         {
-            int nx = x + moves[i, 0];
-            int ny = y + moves[i, 1];
+            int nx = coords.x + moves[i, 0];
+            int ny = coords.y + moves[i, 1];
 
-            if (map.IsInsideBounds(nx, ny))
+            if (map.IsInsideBounds(new Coords2(nx, ny)))
             {
                 if (wallLayerTiles[nx, ny] != null)
                 {
                     wallLayerTiles[nx, ny] = null;
-                    wallLayerTiles[x + moves[i, 0] / 2, y + moves[i, 1] / 2] = null;
+                    wallLayerTiles[coords.x + moves[i, 0] / 2, coords.y + moves[i, 1] / 2] = null;
 
-                    BacktrackCarve(map, wallLayerTiles, nx, ny);
+                    BacktrackCarve(map, wallLayerTiles, new Coords2(nx, ny));
                 }
             }
         }
