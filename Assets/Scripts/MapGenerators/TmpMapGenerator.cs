@@ -89,8 +89,8 @@ public class TmpMapGenerator : MapGenerator
         while (doorY == crossY) doorY = Random.Range(verticalWallMin, verticalWallMax + 1);
 
         //placing doors
-        wallLayerTiles[doorX, crossY] = RandomizeTile(horizontalDoorTilePrefabs);
-        wallLayerTiles[crossX, doorY] = RandomizeTile(verticalDoorTilePrefabs);
+        wallLayerTiles[doorX, crossY] = RandomizeTile(verticalDoorTilePrefabs);
+        wallLayerTiles[crossX, doorY] = RandomizeTile(horizontalDoorTilePrefabs);
 
         //instantiating tiles
         for (int x = 0; x < width; ++x)

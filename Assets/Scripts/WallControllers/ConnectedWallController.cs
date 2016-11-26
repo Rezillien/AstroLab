@@ -20,6 +20,10 @@ public class ConnectedWallController : WallTileController
     {
         return true;
     }
+    public override bool IsBlockingLight()
+    {
+        return true;
+    }
 
     public override void UpdateSprite(Coords2 coords)
     {

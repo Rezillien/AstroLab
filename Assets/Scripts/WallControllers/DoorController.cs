@@ -40,4 +40,10 @@ public class DoorController : WallTileController
     {
         return !isOpen;
     }
+
+    //returns false when open, true when closed
+    public override bool IsBlockingLight()
+    {
+        return !isOpen;
+    }
 }

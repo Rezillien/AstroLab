@@ -5,7 +5,7 @@ using System.Collections;
 public class FloorTileController : MonoBehaviour
 {
 
-    // Use this for initialization
+    // Use this for initialization 
     void Start()
     {
 

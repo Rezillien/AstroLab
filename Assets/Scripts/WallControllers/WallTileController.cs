@@ -27,6 +27,10 @@ public class WallTileController : MonoBehaviour
     {
         return false;
     }
+    public virtual bool IsBlockingLight()
+    {
+        return false;
+    }
 
     public virtual void UpdateSprite(Coords2 coords)
     {

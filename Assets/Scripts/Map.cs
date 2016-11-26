@@ -5,6 +5,9 @@ using Random = UnityEngine.Random;
 
 public class Map : MonoBehaviour
 {
+    public delegate void WallTileChangedEventHandler(Coords2 coords);
+    public event WallTileChangedEventHandler OnWallTileChanged;
+
     public int width;
     public int height;
 
@@ -39,6 +42,25 @@ public class Map : MonoBehaviour
 
         return controller.HasCollider();
     }
+    public bool IsBlockingLight(Coords2 coords)
+    {
+        GameObject tile = GetWallTile(coords);
+        if (tile == null)
+            return false;
+
+        WallTileController controller = tile.GetComponent<WallTileController>();
+        if (controller == null)
+        {
+            return tile.GetComponent<BoxCollider2D>() != null;
+        }
+
+        return controller.IsBlockingLight();
+    }
+
+    private void WallTileChanged(Coords2 coords)
+    {
+        if (OnWallTileChanged != null) OnWallTileChanged(coords);
+    }
 
     public bool Interact(Coords2 coords, GameObject player)
     {
@@ -48,7 +70,9 @@ public class Map : MonoBehaviour
         WallTileController controller = tile.GetComponent<WallTileController>();
         if (controller == null) return false;
 
-        return tile.GetComponent<WallTileController>().Interact(player);
+        bool interacted = tile.GetComponent<WallTileController>().Interact(player);
+        if (interacted) WallTileChanged(coords);
+        return interacted;
     }
 
     //sets reference
@@ -69,6 +93,7 @@ public class Map : MonoBehaviour
     public void SetWallTile(Coords2 coords, GameObject tile)
     {
         SetTile(coords, tile, wallTileLayer);
+        WallTileChanged(coords);
     }
 
     // instantiates!!! and sets reference
