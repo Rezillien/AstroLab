@@ -4,11 +4,12 @@ using Random = UnityEngine.Random;
 
 public class FogController : MonoBehaviour {
 
-    public Texture2D texture;
-    public Sprite sprite;
-    public Transform playerTransform;
-    public Map map;
-    public int textureSize;
+    private Texture2D texture;
+    private Sprite sprite;
+    private Transform playerTransform;
+    private Map map;
+    private int textureSize;
+    private bool textureChanged;
     
 	// Use this for initialization
 	void Start () {
@@ -19,16 +20,15 @@ public class FogController : MonoBehaviour {
         texture = new Texture2D(textureSize, textureSize, TextureFormat.RGBAFloat, false, true);
         texture.wrapMode = TextureWrapMode.Repeat;
         //texture.filterMode = FilterMode.Point;
-
-        for (int x = 0; x < textureSize; ++x)
+        Color[] colors = new Color[textureSize * textureSize];
+        for (int y = 0, i = 0; y < textureSize; ++y)
         {
-            for (int y = 0; y < textureSize; ++y)
+            for (int x = 0; x < textureSize; ++x, ++i)
             {
-                GameObject tile = map.GetWallTile(new Coords2(x, y));
-                SetSolid(new Coords2(x, y), tile != null);
+                colors[i] = ChooseColor(new Coords2(x, y));
             }
         }
-
+        texture.SetPixels(colors);
         texture.Apply();
 
         sprite = Sprite.Create(texture, Rect.MinMaxRect(0, 0, textureSize, textureSize), new Vector2(0, 0));
@@ -48,7 +48,8 @@ public class FogController : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        texture.Apply();
+        if(textureChanged) texture.Apply();
+        textureChanged = false;
 
         float playerX = playerTransform.position.x;
         float playerY = playerTransform.position.y;
@@ -59,15 +60,29 @@ public class FogController : MonoBehaviour {
         material.SetVector(Shader.PropertyToID("_PlayerPos"), new Vector4(texX, texY, 0, 0));
     }
 
-    void SetSolid(Coords2 coords, bool solid)
+    void UpdateColor(Coords2 coords)
+    {
+        Color color = ChooseColor(coords);
+        SetColor(coords, color);
+    }
+
+    void SetColor(Coords2 coords, Color color)
+    {
+        texture.SetPixel(coords.x, coords.y, color);
+        textureChanged = true;
+    }
+
+    Color ChooseColor(Coords2 coords)
     {
         Color color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
-        if (solid) color.a = 1.0f;
-        texture.SetPixel(coords.x, coords.y, color);
+
+        bool blocksLight = map.IsBlockingLight(coords);
+        if (blocksLight) color.a = 1.0f;
+        return color;
     }
 
     void OnWallTileChanged(Coords2 coords)
     {
-        SetSolid(coords, map.IsBlockingLight(coords));
+        UpdateColor(coords);
     }
 }
