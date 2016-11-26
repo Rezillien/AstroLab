@@ -41,9 +41,9 @@ public class DoorController : WallTileController
         return !isOpen;
     }
 
-    //returns false when open, true when closed
-    public override bool IsBlockingLight()
+    //returns 0.0f when open, 1.0f when closed
+    public override float Opacity()
     {
-        return !isOpen;
+         return isOpen ? 0.0f : 1.0f;
     }
 }

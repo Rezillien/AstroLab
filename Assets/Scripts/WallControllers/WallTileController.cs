@@ -27,9 +27,9 @@ public class WallTileController : MonoBehaviour
     {
         return false;
     }
-    public virtual bool IsBlockingLight()
+    public virtual float Opacity()
     {
-        return false;
+        return 0.0f;
     }
 
     public virtual void UpdateSprite(Coords2 coords)

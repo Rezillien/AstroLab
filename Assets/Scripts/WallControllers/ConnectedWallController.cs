@@ -20,9 +20,9 @@ public class ConnectedWallController : WallTileController
     {
         return true;
     }
-    public override bool IsBlockingLight()
+    public override float Opacity()
     {
-        return true;
+        return 1.0f;
     }
 
     public override void UpdateSprite(Coords2 coords)

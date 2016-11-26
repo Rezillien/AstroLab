@@ -78,8 +78,8 @@ public class FogController : MonoBehaviour {
     {
         Color color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
 
-        bool blocksLight = map.IsBlockingLight(coords);
-        if (blocksLight) color.a = 1.0f;
+        float opacity = map.Opacity(coords);
+        color.a = opacity;
         return color;
     }
 

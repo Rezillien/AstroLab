@@ -42,19 +42,19 @@ public class Map : MonoBehaviour
 
         return controller.HasCollider();
     }
-    public bool IsBlockingLight(Coords2 coords)
+    public float Opacity(Coords2 coords)
     {
         GameObject tile = GetWallTile(coords);
         if (tile == null)
-            return false;
+            return 0.0f;
 
         WallTileController controller = tile.GetComponent<WallTileController>();
         if (controller == null)
         {
-            return tile.GetComponent<BoxCollider2D>() != null;
+            return tile.GetComponent<BoxCollider2D>() != null ? 1.0f : 0.0f;
         }
 
-        return controller.IsBlockingLight();
+        return controller.Opacity();
     }
 
     private void WallTileChanged(Coords2 coords)
