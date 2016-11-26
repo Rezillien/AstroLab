@@ -19,7 +19,7 @@ public class FogController : MonoBehaviour {
         textureSize = Mathf.Max(map.width, map.height);
         texture = new Texture2D(textureSize, textureSize, TextureFormat.RGBAFloat, false, true);
         texture.wrapMode = TextureWrapMode.Repeat;
-        //texture.filterMode = FilterMode.Point;
+
         Color[] colors = new Color[textureSize * textureSize];
         for (int y = 0, i = 0; y < textureSize; ++y)
         {
@@ -38,6 +38,8 @@ public class FogController : MonoBehaviour {
         Material material = spriteRenderer.material;
         material.renderQueue = 3001;
         material.mainTexture = texture;
+        material.SetInt(Shader.PropertyToID("_TextureSize"), textureSize);
+
         spriteRenderer.sprite = sprite;
         transform.position = new Vector3(-0.5f, -0.5f, 0);
         transform.localScale = new Vector3(100, 100, 1.0f);

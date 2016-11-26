@@ -2,6 +2,7 @@
     Properties{
         _MainTex("Light Blocking Map", 2D) = "white" {}
         _PlayerPos("Raycast Start Pos", Vector) = (0.06, 0.06, 0, 0)
+        _TextureSize("Texture Size", Int) = 16
     }
 
         SubShader{
@@ -42,10 +43,11 @@
         o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
         return o;
     }
-
+    
     fixed4 frag(v2f i) : SV_Target
     {
         //fixed4 col = tex2D(_MainTex, i.texcoord);
+        //float4 col = textureBicubic(i.texcoord);
         //return col; 
         
         float solidBlocking = 0.18; // light blocking coeficient of solids <0,1>
