@@ -4,8 +4,8 @@ using System;
 public class PlayerMovement : MonoBehaviour
 {
     // position
-    int x;
-    int y;
+    public int x;
+    public int y;
 
     SmoothTransition moveAnimation;
 
