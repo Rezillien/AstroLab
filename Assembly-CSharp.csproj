@@ -6,7 +6,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{F6E17AB1-DAEC-4A22-84C6-C20F1E2E2973}</ProjectGuid>
+    <ProjectGuid>{2CD881B9-DA14-15E0-BFAF-3F5CD4231A68}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -45,10 +45,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\Coords2.cs" />
+     <Compile Include="Assets\Scripts\DirectionHelper.cs" />
+     <Compile Include="Assets\Scripts\FloorControllers\FloorTileController.cs" />
+     <Compile Include="Assets\Scripts\FogController.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
-     <Compile Include="Assets\Scripts\Loader.cs" />
+     <Compile Include="Assets\Scripts\Map.cs" />
+     <Compile Include="Assets\Scripts\MapGenerators\MapGenerator.cs" />
+     <Compile Include="Assets\Scripts\MapGenerators\MazeMapGenerator.cs" />
+     <Compile Include="Assets\Scripts\MapGenerators\TmpMapGenerator.cs" />
+     <Compile Include="Assets\Scripts\PersistentFogController.cs" />
      <Compile Include="Assets\Scripts\PlayerMovement.cs" />
-     <Compile Include="Assets\Scripts\StartBoardManager.cs" />
+     <Compile Include="Assets\Scripts\Prefabs.cs" />
+     <Compile Include="Assets\Scripts\SmoothTransition.cs" />
+     <Compile Include="Assets\Scripts\SpriteSet.cs" />
+     <Compile Include="Assets\Scripts\WallControllers\ConnectedWallController.cs" />
+     <Compile Include="Assets\Scripts\WallControllers\DoorController.cs" />
+     <Compile Include="Assets\Scripts\WallControllers\WallTileController.cs" />
+     <None Include="Assets\Shaders\Fog.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
