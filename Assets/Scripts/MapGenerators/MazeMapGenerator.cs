@@ -26,6 +26,7 @@ public class MazeMapGenerator : MapGenerator
 
         GameObject[,] floorLayerTiles = new GameObject[width, height];
         GameObject[,] wallLayerTiles = new GameObject[width, height];
+        GameObject[,] worldObjectLayer = new GameObject[width, height];
 
         for (int x = 0; x < width; ++x)
         {
@@ -33,6 +34,7 @@ public class MazeMapGenerator : MapGenerator
             {
                 floorLayerTiles[x, y] = RandomizeTile(floorTilePrefabs);
                 wallLayerTiles[x, y] = wallTilePrefab;
+                worldObjectLayer[x, y] = null;
             }
         }
 
@@ -55,17 +57,34 @@ public class MazeMapGenerator : MapGenerator
             }
         }
 
+        worldObjectLayer[0, 1] = prefabs.cameraPrefab;
+
         for (int x = 0; x < width; ++x)
         {
             for (int y = 0; y < height; ++y)
             {
+                Coords2 coords = new Coords2(x, y);
+
                 GameObject floorToInstantiate = floorLayerTiles[x, y];
-                map.CreateFloorTile(new Coords2(x, y), floorToInstantiate);
+                map.CreateFloorTile(coords, floorToInstantiate);
 
                 GameObject wallToInstantiate = wallLayerTiles[x, y];
                 if (wallToInstantiate != null)
                 {
-                    map.CreateWallTile(new Coords2(x, y), wallToInstantiate);
+                    map.CreateWallTile(coords, wallToInstantiate);
+                }
+
+                GameObject worldObjectToInstantiate = worldObjectLayer[x, y];
+                if (worldObjectToInstantiate != null)
+                {
+                    CameraObjectController cameraController = map.CreateWorldObject(new Coords2(x, y), worldObjectToInstantiate).GetComponent<CameraObjectController>();
+                    if(cameraController != null)
+                    {
+                        cameraController.SetOrigin(coords, new Vector2(x + 1.2f, y + 0.5f));
+                        cameraController.SetAnchor(new Vector2(x + 0.5f, y - 0.2f));
+                        cameraController.RotateAroundOrigin(45.0f);
+                        cameraController.SetEnabled(coords, false);
+                    }
                 }
             }
         }

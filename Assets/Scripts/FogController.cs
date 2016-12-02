@@ -1,8 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Random = UnityEngine.Random;
+using System.Collections.Generic;
 
-public class FogController : MonoBehaviour {
+public class FogController : MonoBehaviour
+{
+
+    private class Camera
+    {
+        public Vector2 origin;
+        public bool isOn;
+        public int shaderPropertyId;
+    }
+
+    private const int maxNumberOfCameras = 16;
 
     private Texture2D texture;
     private Sprite sprite;
@@ -10,9 +21,13 @@ public class FogController : MonoBehaviour {
     private Map map;
     private int textureSize;
     private bool textureChanged;
-    
-	// Use this for initialization
-	void Start () {
+    private Dictionary<Coords2, Camera> cameras;
+    private Stack<int> unusedShaderPropertyIds;
+    private Material material;
+
+    // Use this for initialization
+    void Start()
+    {
         playerTransform = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>().transform;
         map = GameManager.instance.GetMap();
 
@@ -35,30 +50,38 @@ public class FogController : MonoBehaviour {
 
         SpriteRenderer spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         Transform transform = gameObject.GetComponent<Transform>();
-        Material material = spriteRenderer.material;
+        material = spriteRenderer.material;
         material.renderQueue = 3001;
         material.mainTexture = texture;
         material.SetInt(Shader.PropertyToID("_TextureSize"), textureSize);
+
+        cameras = new Dictionary<Coords2, Camera>();
+        unusedShaderPropertyIds = new Stack<int>();
+        for (int i = 0; i < maxNumberOfCameras; ++i)
+        {
+            int currentId = Shader.PropertyToID("_CamerasPos" + i.ToString());
+            unusedShaderPropertyIds.Push(currentId);
+            material.SetVector(currentId, new Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+        }
 
         spriteRenderer.sprite = sprite;
         transform.position = new Vector3(-0.5f, -0.5f, 0);
         transform.localScale = new Vector3(100, 100, 1.0f);
 
         map.OnWallTileChanged += new Map.WallTileChangedEventHandler(OnWallTileChanged);
+        CameraObjectController.OnCameraStateChanged += new CameraObjectController.CameraStateChangedEventHandler(OnCameraStateChanged);
     }
-	
-	// Update is called once per frame
-	void Update ()
+
+    // Update is called once per frame
+    void Update()
     {
-        if(textureChanged) texture.Apply();
+        if (textureChanged) texture.Apply();
         textureChanged = false;
 
         float playerX = playerTransform.position.x;
         float playerY = playerTransform.position.y;
         float texX = (playerX + 0.5f) / textureSize;
         float texY = (playerY + 0.5f) / textureSize;
-        SpriteRenderer spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
-        Material material = spriteRenderer.material;
         material.SetVector(Shader.PropertyToID("_PlayerPos"), new Vector4(texX, texY, 0, 0));
     }
 
@@ -86,5 +109,30 @@ public class FogController : MonoBehaviour {
     void OnWallTileChanged(Coords2 coords)
     {
         UpdateColor(coords);
+    }
+
+    void UpdateShaderProperty(Camera camera)
+    {
+        Vector4 newProperty = new Vector4(camera.origin.x / textureSize, camera.origin.y / textureSize, (camera.isOn ? 1.0f : 0.0f), 0.0f);
+        material.SetVector(camera.shaderPropertyId, newProperty);
+    }
+
+    void OnCameraStateChanged(Coords2 coords, CameraObjectController cameraController)
+    {
+        Camera camera;
+        if (cameras.TryGetValue(coords, out camera))
+        {
+            camera.isOn = cameraController.IsOn();
+            camera.origin = cameraController.GetOrigin();
+        }
+        else
+        {
+            camera = new Camera();
+            camera.origin = cameraController.GetOrigin();
+            camera.isOn = cameraController.IsOn();
+            camera.shaderPropertyId = unusedShaderPropertyIds.Pop();
+            cameras.Add(coords, camera);
+        }
+        UpdateShaderProperty(camera);
     }
 }

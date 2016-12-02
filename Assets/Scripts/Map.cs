@@ -13,12 +13,14 @@ public class Map : MonoBehaviour
 
     private GameObject[,] floorTileLayer;
     private GameObject[,] wallTileLayer;
+    private GameObject[,] worldObjectLayer;
 
     //generates map using given generator
     void GenerateMap(MapGenerator mapGenerator)
     {
         floorTileLayer = new GameObject[width, height];
         wallTileLayer = new GameObject[width, height];
+        worldObjectLayer = new GameObject[width, height];
 
         mapGenerator.Generate(this);
     }
@@ -62,7 +64,7 @@ public class Map : MonoBehaviour
         if (OnWallTileChanged != null) OnWallTileChanged(coords);
     }
 
-    public bool Interact(Coords2 coords, GameObject player)
+    private bool InteractWall(Coords2 coords, GameObject player)
     {
         GameObject tile = GetWallTile(coords);
         if (tile == null) return false;
@@ -70,41 +72,67 @@ public class Map : MonoBehaviour
         WallTileController controller = tile.GetComponent<WallTileController>();
         if (controller == null) return false;
 
-        bool interacted = tile.GetComponent<WallTileController>().Interact(player);
+        bool interacted = controller.Interact(coords, player);
         if (interacted) WallTileChanged(coords);
         return interacted;
     }
 
-    //sets reference
-    private void SetTile(Coords2 coords, GameObject tile, GameObject[,] layer)
+    private bool InteractObject(Coords2 coords, GameObject player)
     {
-        if (!IsInsideBounds(coords)) return;
+        GameObject tile = GetWorldObject(coords);
+        if (tile == null) return false;
+
+        WorldObjectController controller = tile.GetComponent<WorldObjectController>();
+        if (controller == null) return false;
+
+        return controller.Interact(coords, player);
+    }
+    
+    public bool Interact(Coords2 coords, GameObject player)
+    {
+        return InteractWall(coords, player) || InteractObject(coords, player);
+    }
+
+    //sets reference
+    private GameObject SetTile(Coords2 coords, GameObject tile, GameObject[,] layer)
+    {
+        if (!IsInsideBounds(coords)) return null;
 
         RemoveTile(coords, layer);
         layer[coords.x, coords.y] = tile;
+        return tile;
     }
 
     //sets reference
-    public void SetFloorTile(Coords2 coords, GameObject tile)
+    public GameObject SetFloorTile(Coords2 coords, GameObject tile)
     {
-        SetTile(coords, tile, floorTileLayer);
+        return SetTile(coords, tile, floorTileLayer);
     }
 
-    public void SetWallTile(Coords2 coords, GameObject tile)
+    public GameObject SetWallTile(Coords2 coords, GameObject tile)
     {
-        SetTile(coords, tile, wallTileLayer);
+        GameObject placedTile = SetTile(coords, tile, wallTileLayer);
         WallTileChanged(coords);
+        return placedTile;
+    }
+    public GameObject SetWorldObject(Coords2 coords, GameObject tile)
+    {
+        return SetTile(coords, tile, worldObjectLayer);
     }
 
     // instantiates!!! and sets reference
-    public void CreateFloorTile(Coords2 coords, GameObject tile)
+    public GameObject CreateFloorTile(Coords2 coords, GameObject tile)
     {
-        SetFloorTile(coords, Instantiate(tile, new Vector3(coords.x, coords.y, 0f), Quaternion.identity) as GameObject);
+        return SetFloorTile(coords, Instantiate(tile, new Vector3(coords.x, coords.y, 0f), Quaternion.identity) as GameObject);
     }
 
-    public void CreateWallTile(Coords2 coords, GameObject tile)
+    public GameObject CreateWallTile(Coords2 coords, GameObject tile)
     {
-        SetWallTile(coords, Instantiate(tile, new Vector3(coords.x, coords.y, 0f), Quaternion.identity) as GameObject);
+        return SetWallTile(coords, Instantiate(tile, new Vector3(coords.x, coords.y, 0f), Quaternion.identity) as GameObject);
+    }
+    public GameObject CreateWorldObject(Coords2 coords, GameObject tile)
+    {
+        return SetWorldObject(coords, Instantiate(tile, new Vector3(coords.x, coords.y, 0f), Quaternion.identity) as GameObject);
     }
 
     private void RemoveTile(Coords2 coords, GameObject[,] layer)
@@ -125,6 +153,10 @@ public class Map : MonoBehaviour
     {
         RemoveTile(coords, wallTileLayer);
     }
+    public void RemoveWorldObject(Coords2 coords)
+    {
+        RemoveTile(coords, worldObjectLayer);
+    }
 
     private GameObject GetTile(Coords2 coords, GameObject[,] layer)
     {
@@ -141,6 +173,10 @@ public class Map : MonoBehaviour
     public GameObject GetWallTile(Coords2 coords)
     {
         return GetTile(coords, wallTileLayer);
+    }
+    public GameObject GetWorldObject(Coords2 coords)
+    {
+        return GetTile(coords, worldObjectLayer);
     }
 
     public GameObject GetFloorTileNorthOf(Coords2 coords)
