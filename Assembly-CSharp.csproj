@@ -45,6 +45,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\CameraController.cs" />
      <Compile Include="Assets\Scripts\Coords2.cs" />
      <Compile Include="Assets\Scripts\DirectionHelper.cs" />
      <Compile Include="Assets\Scripts\FloorControllers\FloorTileController.cs" />
@@ -62,6 +63,8 @@
      <Compile Include="Assets\Scripts\WallControllers\ConnectedWallController.cs" />
      <Compile Include="Assets\Scripts\WallControllers\DoorController.cs" />
      <Compile Include="Assets\Scripts\WallControllers\WallTileController.cs" />
+     <Compile Include="Assets\Scripts\WorldObjectControllers\CameraObjectController.cs" />
+     <Compile Include="Assets\Scripts\WorldObjectControllers\WorldObjectController.cs" />
      <None Include="Assets\Shaders\Fog.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
