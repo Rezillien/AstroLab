@@ -67,7 +67,7 @@
         float4 c1;
         float2 dt = (t1 - t0) / iterations; //step size
         float solidBlocking = 40 * length(dt); // light blocking coeficient of solids
-        float airBlocking = 2 * length(dt); // light blocking coeficient of air
+        float airBlocking = 1 * length(dt); // light blocking coeficient of air
         float2 t = t0;
         float4 c0 = fixed4(0.0, 0.0, 0.0, 0.0);   //initially transparent
 

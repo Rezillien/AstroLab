@@ -33,16 +33,17 @@ public class PlayerMovement : MonoBehaviour
         int dx = 0;
         int dy = 0;
 
-        if (Input.GetKeyDown("up")) dy = 1;
-        if (Input.GetKeyDown("left")) dx = -1;
-        if (Input.GetKeyDown("down")) dy = -1;
-        if (Input.GetKeyDown("right")) dx = 1;
+        if (Input.GetKey("up")) dy = 1;
+        if (Input.GetKey("left")) dx = -1;
+        if (Input.GetKey("down")) dy = -1;
+        if (Input.GetKey("right")) dx = 1;
 
         if ((dx != 0 || dy != 0) && !map.HasCollider(new Coords2(x + dx, y + dy)))
         {
             moveAnimation = new SmoothTransition(new Vector3(x, y, 0.0f), new Vector3(x + dx, y + dy, 0.0f), 0.25f);
             x += dx;
             y += dy;
+            
 
             return true;
         }
