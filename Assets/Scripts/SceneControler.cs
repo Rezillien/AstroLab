@@ -6,21 +6,19 @@ public class SceneControler : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
-
         if (Input.GetKey("y"))
         {
-            SceneManager.LoadScene("Minigame1", LoadSceneMode.Single);
+            SceneManager.LoadScene("Minigame1", LoadSceneMode.Additive);
         }
 
         if (Input.GetKey("t"))
         {
-            SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
+            SceneManager.SetActiveScene(SceneManager.GetSceneByName("MainScene"));
         }
     }
 }

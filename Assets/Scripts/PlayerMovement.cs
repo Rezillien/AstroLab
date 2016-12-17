@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System;
-using UnityEngine.SceneManagement;  ////////////// change
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -38,13 +37,6 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKey("left")) dx = -1;
         if (Input.GetKey("down")) dy = -1;
         if (Input.GetKey("right")) dx = 1;
-
-
-        //////changes
-       // if(Input.GetKey("y")) SceneManager.LoadScene("Minigame1", LoadSceneMode.Single);
-       // if(Input.GetKey("t")) SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
-        ///////////
-
 
         if ((dx != 0 || dy != 0) && !map.HasCollider(new Coords2(x + dx, y + dy)))
         {

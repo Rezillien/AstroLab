@@ -87,8 +87,9 @@ public class GameManager : MonoBehaviour
     }
 
     //Update is called every frame.
-    void Update()
-    {
+    void Update () {
+
+
         if (Input.GetKey("y"))
         {
             SceneManager.LoadScene("Minigame1", LoadSceneMode.Additive);
@@ -96,7 +97,8 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKey("t"))
         {
-            SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
+            SceneManager.SetActiveScene(SceneManager.GetSceneByName("MainScene"));
+            SceneManager.UnloadScene(SceneManager.GetSceneByName("Minigame1").buildIndex);
         }
     }
 }
