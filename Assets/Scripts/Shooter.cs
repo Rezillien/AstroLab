@@ -4,14 +4,22 @@ using System.Collections;
 public class Shooter : MonoBehaviour {
 
     public Transform cursorPosition;
-	// Use this for initialization
-	void Start () {
+    public GameObject shot;
+    public float fireRate;
 
-	}
+    private float nextFire;
+
+    void Start () {
+        nextFire = 0.0f;
+    }
 	
-	// Update is called once per frame
 	void Update () {
         RotateVeapon();
+        if (Input.GetButton("Fire1") && Time.time > nextFire)
+        {
+            nextFire = Time.time + fireRate;
+            Instantiate(shot, this.transform.position, this.transform.rotation);
+        }
     }
 
     private void RotateVeapon()
