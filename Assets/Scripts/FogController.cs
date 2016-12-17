@@ -54,7 +54,7 @@ public class FogController : MonoBehaviour
         Transform transform = gameObject.GetComponent<Transform>();
         material = spriteRenderer.material;
         //to render in correct order (closer to the camera, after board is rendered)
-        material.renderQueue = 3001;
+        material.renderQueue = 3005;
         material.mainTexture = texture;
         material.SetInt(Shader.PropertyToID("_TextureSize"), textureSize);
 

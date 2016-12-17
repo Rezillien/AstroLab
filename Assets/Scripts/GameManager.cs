@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System;
 
-
+using UnityEngine.SceneManagement;
 using System.Collections.Generic;       //Allows us to use Lists. 
 
 public class GameManager : MonoBehaviour
@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
         Player,
         Enemies
     };
+
+    public SceneControler sceneController;
 
     public static GameManager instance = null;              //Static instance of GameManager which allows it to be accessed by any other script.
 
@@ -44,6 +46,7 @@ public class GameManager : MonoBehaviour
     {
         //Call the SetupScene function of the BoardManager script, pass it current level number.
         GetMap().Setup(GetMapGenerator());
+        //sceneController = new SceneControler();
         turn = Turn.Player; //player starts
     }
 
@@ -97,5 +100,14 @@ public class GameManager : MonoBehaviour
     //Update is called every frame.
     void Update()
     {
+        if (Input.GetKey("y"))
+        {
+            SceneManager.LoadScene("Minigame1", LoadSceneMode.Additive);
+        }
+
+        if (Input.GetKey("t"))
+        {
+            SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
+        }
     }
 }

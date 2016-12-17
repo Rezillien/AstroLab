@@ -2,7 +2,6 @@
     Properties{
         _MainTex("Light Blocking Map", 2D) = "white" {}
         _PlayerPos("Raycast Start Pos", Vector) = (0.06, 0.06, 0, 0)
-        _TextureSize("Texture Size", Int) = 16
     }
 
         SubShader{
@@ -66,8 +65,9 @@
 
         float4 c1;
         float2 dt = (t1 - t0) / iterations; //step size
-        float solidBlocking = 60 * length(dt); // light blocking coeficient of solids
-        float airBlocking = 1.75 * length(dt); // light blocking coeficient of air
+        float dtlen = length(dt);
+        float solidBlocking = 60; // light blocking coeficient of solids
+        float airBlocking = 2; // light blocking coeficient of air
         float2 t = t0;
         float4 c0 = fixed4(0.0, 0.0, 0.0, 0.0);   //initially transparent
 
@@ -75,7 +75,7 @@
         {
             c1 = tex2D(_MainTex, t);
 
-            c0.a += (c1.a*c1.a*solidBlocking) + airBlocking; //add opacity
+            c0.a += (c1.a*c1.a*solidBlocking) * dtlen + airBlocking * dtlen; //add opacity
 
             t += dt;
         }
