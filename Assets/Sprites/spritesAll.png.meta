@@ -1,6 +1,10 @@
 fileFormatVersion: 2
 guid: bb3c02fd2331062439a61cad29fc3856
+<<<<<<< HEAD
 timeCreated: 1481987957
+=======
+timeCreated: 1481984470
+>>>>>>> origin/hack2/amarciniec
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -35,6 +39,12 @@ TextureImporter:
     21300056: spritesAll_28
     21300058: spritesAll_29
     21300060: spritesAll_30
+<<<<<<< HEAD
+=======
+    21300062: spritesAll_31
+    21300064: spritesAll_32
+    21300066: spritesAll_33
+>>>>>>> origin/hack2/amarciniec
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -483,6 +493,74 @@ TextureImporter:
         height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
+<<<<<<< HEAD
+=======
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: spritesAll_29
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 416
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: spritesAll_30
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 416
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: spritesAll_31
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 416
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: spritesAll_32
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: spritesAll_33
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+>>>>>>> origin/hack2/amarciniec
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
