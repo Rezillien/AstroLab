@@ -9,4 +9,5 @@ public class Prefabs : MonoBehaviour {
     public GameObject[] verticalDoorTilePrefabs;
     public GameObject[] horizontalDoorTilePrefabs;
     public GameObject cameraPrefab;
+    public GameObject scenePrefab;
 }
