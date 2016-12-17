@@ -12,6 +12,9 @@ public class Map : MonoBehaviour
     public int width;
     public int height;
 
+    public int startX = 1;
+    public int startY = 1;
+
     private GameObject[,] floorTileLayer;
     private GameObject[,] wallTileLayer;
     private GameObject[,] worldObjectLayer;
@@ -24,6 +27,9 @@ public class Map : MonoBehaviour
         worldObjectLayer = new GameObject[width, height];
 
         mapGenerator.Generate(this);
+
+        PlayerMovement player = GameManager.instance.GetPlayer();
+        player.SetPosition(startX, startY);
     }
 
     public bool IsInsideBounds(Coords2 coords)

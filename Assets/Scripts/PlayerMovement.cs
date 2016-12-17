@@ -9,7 +9,7 @@ public class PlayerMovement : MonoBehaviour
 
     SmoothTransition moveAnimation;
 
-    void Start()
+    void Awake()
     {
         x = 1;
         y = 1;
@@ -17,6 +17,13 @@ public class PlayerMovement : MonoBehaviour
 
         //no animation to start with
         moveAnimation = null;
+    }
+
+    public void SetPosition(int _x, int _y)
+    {
+        x = _x;
+        y = _y;
+        transform.position = new Vector3(x, y, 0);
     }
 
     //inform GameManager that player ended turn

@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
 
     public static GameManager instance = null;              //Static instance of GameManager which allows it to be accessed by any other script.
 
+    private PlayerMovement player = null; 
     private Turn turn;
 
     //Awake is always called before any Start functions
@@ -59,6 +60,16 @@ public class GameManager : MonoBehaviour
     public Map GetMap()
     {
         return GetComponent<Map>();
+    }
+
+    public PlayerMovement GetPlayer()
+    {
+        if(player == null)
+        {
+            player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
+        }
+
+        return player;
     }
 
     public bool IsPlayerTurn()
