@@ -26,9 +26,13 @@ public class TmpMapGenerator : MapGenerator
         GameObject[] floorTilePrefabs = prefabs.floorTilePrefabs;
         GameObject[] verticalDoorTilePrefabs = prefabs.verticalDoorTilePrefabs;
         GameObject[] horizontalDoorTilePrefabs = prefabs.horizontalDoorTilePrefabs;
-        
+        GameObject[] serverPrefarbs = prefabs.serverPrefabs;
+
         GameObject[,] floorLayerTiles = new GameObject[width, height];
         GameObject[,] wallLayerTiles = new GameObject[width, height];
+        GameObject[,] worldObjectLayer = new GameObject[width, height];
+
+
 
         for (int x = 0; x < width; ++x)
         {
@@ -36,6 +40,7 @@ public class TmpMapGenerator : MapGenerator
             {
                 floorLayerTiles[x, y] = RandomizeTile(floorTilePrefabs);
                 wallLayerTiles[x, y] = null;
+                worldObjectLayer[x, y] = null;
             }
         }
 
@@ -91,8 +96,47 @@ public class TmpMapGenerator : MapGenerator
         //placing doors
         wallLayerTiles[doorX, crossY] = RandomizeTile(verticalDoorTilePrefabs);
         wallLayerTiles[crossX, doorY] = RandomizeTile(horizontalDoorTilePrefabs);
-
+        worldObjectLayer[0, 1] = prefabs.cameraPrefab;
+        worldObjectLayer[5, 5] = prefabs.enginePrefab;
+        worldObjectLayer[2, 3] = prefabs.serverPrefabs[0];
+        worldObjectLayer[3, 3] = prefabs.serverPrefabs[1];
+        worldObjectLayer[2, 2] = prefabs.serverPrefabs[2];
+        worldObjectLayer[3, 2] = prefabs.serverPrefabs[3];
+        //worldObjectLayer[3, 4] = prefabs.enginePrefab;
         //instantiating tiles
+        for (int x = 0; x < width; ++x)
+        {
+            for (int y = 0; y < height; ++y)
+            {
+                Coords2 coords = new Coords2(x, y);
+
+                GameObject floorToInstantiate = floorLayerTiles[x, y];
+                map.CreateFloorTile(coords, floorToInstantiate);
+
+                GameObject wallToInstantiate = wallLayerTiles[x, y];
+                if (wallToInstantiate != null)
+                {
+                    map.CreateWallTile(coords, wallToInstantiate);
+                }
+
+                GameObject worldObjectToInstantiate = worldObjectLayer[x, y];
+                if (worldObjectToInstantiate != null)
+                {
+
+                    CameraObjectController cameraController = map.CreateWorldObject(new Coords2(x, y), worldObjectToInstantiate).GetComponent<CameraObjectController>();
+                    if (cameraController != null)
+                    {
+                        cameraController.SetOrigin(coords, new Vector2(x + 1.2f, y + 0.5f));
+                        cameraController.SetAnchor(new Vector2(x + 0.5f, y - 0.2f));
+                        cameraController.RotateAroundOrigin(45.0f);
+                        cameraController.SetEnabled(coords, false);
+                    }
+                }
+            }
+        }
+
+        //
+
         for (int x = 0; x < width; ++x)
         {
             for (int y = 0; y < height; ++y)
@@ -107,5 +151,6 @@ public class TmpMapGenerator : MapGenerator
                 }
             }
         }
+        
     }
 }

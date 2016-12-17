@@ -64,7 +64,7 @@ public class MazeMapGenerator : MapGenerator
 
         //TEMP placement of camera object for tests
         worldObjectLayer[0, 1] = prefabs.cameraPrefab;
-
+        worldObjectLayer[3, 4] = prefabs.enginePrefab;
         for (int x = 0; x < width; ++x)
         {
             for (int y = 0; y < height; ++y)
@@ -84,6 +84,7 @@ public class MazeMapGenerator : MapGenerator
                 //TEMP instantiation of world object and initialization, which should be done more carefully
                 if (worldObjectToInstantiate != null)
                 {
+                   
                     CameraObjectController cameraController = map.CreateWorldObject(new Coords2(x, y), worldObjectToInstantiate).GetComponent<CameraObjectController>();
                     if(cameraController != null)
                     {
