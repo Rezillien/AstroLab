@@ -61,6 +61,7 @@
      <Compile Include="Assets\Scripts\MapGenerators\MazeMapGenerator.cs" />
      <Compile Include="Assets\Scripts\MapGenerators\TestMapGenerator.cs" />
      <Compile Include="Assets\Scripts\MapGenerators\TmpMapGenerator.cs" />
+     <Compile Include="Assets\Scripts\Mover.cs" />
      <Compile Include="Assets\Scripts\PersistentFogController.cs" />
      <Compile Include="Assets\Scripts\PlayerMovement.cs" />
      <Compile Include="Assets\Scripts\Prefabs.cs" />
@@ -72,6 +73,7 @@
      <Compile Include="Assets\Scripts\SmoothTransition.cs" />
      <Compile Include="Assets\Scripts\SpriteSet.cs" />
      <Compile Include="Assets\Scripts\WallControllers\ConnectedWallController.cs" />
+     <Compile Include="Assets\Scripts\WallControllers\DirtController.cs" />
      <Compile Include="Assets\Scripts\WallControllers\DoorController.cs" />
      <Compile Include="Assets\Scripts\WallControllers\WallTileController.cs" />
      <Compile Include="Assets\Scripts\WorldObjectControllers\CameraObjectController.cs" />
