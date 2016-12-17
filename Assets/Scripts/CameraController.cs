@@ -8,7 +8,7 @@ public class CameraController : MonoBehaviour
     private Vector3 mousePositionFirst;
     private Vector3 mousePositionSecond;
     private Vector3 transformVector;
-    public float moveSpeed = 1/16.0f;
+    public float moveSpeed = 1;
 
     // Use this for initialization
     void Start()
@@ -26,7 +26,7 @@ public class CameraController : MonoBehaviour
         {
             Vector3 worldPosFirst = Camera.main.ScreenToWorldPoint(mousePositionFirst);
             Vector3 worldPosSecond = Camera.main.ScreenToWorldPoint(mousePositionSecond);
-            transformVector = new Vector3(mousePositionFirst.x - mousePositionSecond.x, mousePositionFirst.y - mousePositionSecond.y, -10.0f);
+            transformVector = new Vector3(worldPosFirst.x - worldPosSecond.x, worldPosFirst.y - worldPosSecond.y, -10.0f);
             transform.position = new Vector3(transform.position.x + transformVector.x * moveSpeed, transform.position.y + transformVector.y * moveSpeed, transformVector.z);
         }
 
