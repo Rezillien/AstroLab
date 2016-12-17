@@ -18,8 +18,7 @@ public class PersistentFogController : MonoBehaviour
     private Map map;
     private int textureSize;
     private bool textureChanged;
-
-    // Use this for initialization
+    
     void Start()
     {
         player = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>();
@@ -31,7 +30,8 @@ public class PersistentFogController : MonoBehaviour
         oldTileVisibility = new Visibility[textureSize, textureSize];
         tileVisibility = new Visibility[textureSize, textureSize];
 
-        Color[] colors = new Color[textureSize * textureSize];
+        Color[] colors= new Color[textureSize * textureSize];
+        //fog initialization
         for (int y = 0, i = 0; y < textureSize; ++y)
         {
             for (int x = 0; x < textureSize; ++x, ++i)
@@ -44,6 +44,7 @@ public class PersistentFogController : MonoBehaviour
         texture.SetPixels(colors);
         texture.Apply();
 
+        //create fog texture and set shader uniforms
         sprite = Sprite.Create(texture, Rect.MinMaxRect(0, 0, textureSize, textureSize), new Vector2(0, 0));
 
         SpriteRenderer spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
@@ -59,6 +60,7 @@ public class PersistentFogController : MonoBehaviour
 
     private void UpdateTileVisibility(Coords2 coords, bool[,] isVisited)
     {
+        //in this type of fog a tile can be either visible or not, fractional opacity is not supported
         const float opacityThreshold = 0.5f;
 
         if (map.Opacity(coords) > opacityThreshold) return;
@@ -67,6 +69,7 @@ public class PersistentFogController : MonoBehaviour
         isVisited[coords.x, coords.y] = true;
         tileVisibility[coords.x, coords.y] = Visibility.Visible;
 
+        //flood fill room
         if (coords.x > 0) UpdateTileVisibility(new Coords2(coords.x - 1, coords.y), isVisited);
         if (coords.y > 0) UpdateTileVisibility(new Coords2(coords.x, coords.y - 1), isVisited);
         if (coords.x < textureSize - 1) UpdateTileVisibility(new Coords2(coords.x + 1, coords.y), isVisited);
@@ -86,6 +89,7 @@ public class PersistentFogController : MonoBehaviour
             for (int y = 0; y < textureSize; ++y)
             {
                 oldTileVisibility[x, y] = tileVisibility[x, y];
+                //after that flood fill i performed to mark still visible tiles
                 if (tileVisibility[x, y] == Visibility.Visible)
                     tileVisibility[x, y] = Visibility.Discovered;
             }
@@ -97,6 +101,7 @@ public class PersistentFogController : MonoBehaviour
         {
             for (int y = 0; y < textureSize; ++y)
             {
+                //update only when necessary
                 if (tileVisibility[x, y] != oldTileVisibility[x, y])
                 {
                     UpdateColor(new Coords2(x, y));
@@ -108,6 +113,7 @@ public class PersistentFogController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //apply is expensive, so do it only when there was a change
         if (textureChanged) texture.Apply();
         textureChanged = false;
     }
@@ -125,12 +131,17 @@ public class PersistentFogController : MonoBehaviour
 
     Color ChooseColor(Visibility v)
     {
+        const float undiscoveredOpacity = 1.0f;
+        const float discoveredOpacity = 0.75f;
+        const float visible = 0.0f;
+
         float opacity = 0.0f;
+        
+        if (v == Visibility.Undiscovered) opacity = undiscoveredOpacity;
+        else if (v == Visibility.Discovered) opacity = discoveredOpacity;
+        else if (v == Visibility.Visible) opacity = visible;
 
-        if (v == Visibility.Undiscovered) opacity = 1.0f;
-        else if (v == Visibility.Discovered) opacity = 0.75f;
-        else if (v == Visibility.Visible) opacity = 0.0f;
-
+        //black with opacity
         return new Color(0.0f, 0.0f, 0.0f, opacity);
     }
 }

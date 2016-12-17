@@ -3,6 +3,7 @@ using System.Collections;
 
 public class CameraObjectController : WorldObjectController {
 
+    //events
     public delegate void CameraStateChangedEventHandler(Coords2 coords, CameraObjectController cameraController);
     static public event CameraStateChangedEventHandler OnCameraStateChanged;
 
@@ -21,6 +22,8 @@ public class CameraObjectController : WorldObjectController {
 	
 	}
 
+    //every modifying function has to have coords passed because they are needed for emitting an event
+    //TODO: consider storing coords as a property
     public void SetOrigin(Coords2 coords, Vector2 newOrigin)
     {
         origin = newOrigin;

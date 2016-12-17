@@ -3,11 +3,12 @@ using System.Collections;
 
 public class CameraController : MonoBehaviour 
 {
+    //TODO: some method of scaling 
 
 	private Vector3 mousePositionFirst;
 	private Vector3 mousePositionSecond;
 	private Vector3 transformVector;
-	public float moveSpeed=1f;
+	public float moveSpeed = 1f;
 
 	private bool firstFrame=true;
 
@@ -29,7 +30,7 @@ public class CameraController : MonoBehaviour
 				mousePositionFirst = mousePositionSecond;
 				mousePositionSecond = Input.mousePosition;
 				mousePositionSecond = Camera.main.ScreenToWorldPoint (mousePositionSecond);
-				transformVector = new Vector3 (mousePositionFirst.x - mousePositionSecond.x, mousePositionFirst.y - mousePositionSecond.y, -10f);
+				transformVector = new Vector3 (mousePositionFirst.x - mousePositionSecond.x, mousePositionFirst.y - mousePositionSecond.y, -10.0f);
 				transform.position = new Vector3 (transform.position.x + transformVector.x * moveSpeed, transform.position.y + transformVector.y * moveSpeed, transformVector.z);
 			}
 		} else

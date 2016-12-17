@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+//unified storage for all prefabs
 public class Prefabs : MonoBehaviour {
 
     public GameObject[] wallTilePrefabs;

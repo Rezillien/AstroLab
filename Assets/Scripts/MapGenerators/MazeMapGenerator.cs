@@ -4,6 +4,7 @@ using Random = UnityEngine.Random;
 
 public class MazeMapGenerator : MapGenerator
 {
+    //moves are by 2 squares each time because there has to be place for walls
     private static int[,] moves = { { -2, 0 }, { 2, 0 }, { 0, -2 }, { 0, 2 } };
     public float doorChance = 0.1f;
 
@@ -28,6 +29,9 @@ public class MazeMapGenerator : MapGenerator
         GameObject[,] wallLayerTiles = new GameObject[width, height];
         GameObject[,] worldObjectLayer = new GameObject[width, height];
 
+        //fill with random floor
+        //and with the currently only wall with connected texture
+        //TODO: make all walls be connected and randomize them properly
         for (int x = 0; x < width; ++x)
         {
             for (int y = 0; y < height; ++y)
@@ -38,6 +42,7 @@ public class MazeMapGenerator : MapGenerator
             }
         }
 
+        //remove some walls to form a maze
         BacktrackCarve(map, wallLayerTiles);
 
         if (doorChance > 0.0f)
@@ -57,6 +62,7 @@ public class MazeMapGenerator : MapGenerator
             }
         }
 
+        //TEMP placement of camera object for tests
         worldObjectLayer[0, 1] = prefabs.cameraPrefab;
 
         for (int x = 0; x < width; ++x)
@@ -75,6 +81,7 @@ public class MazeMapGenerator : MapGenerator
                 }
 
                 GameObject worldObjectToInstantiate = worldObjectLayer[x, y];
+                //TEMP instantiation of world object and initialization, which should be done more carefully
                 if (worldObjectToInstantiate != null)
                 {
                     CameraObjectController cameraController = map.CreateWorldObject(new Coords2(x, y), worldObjectToInstantiate).GetComponent<CameraObjectController>();
@@ -89,6 +96,7 @@ public class MazeMapGenerator : MapGenerator
             }
         }
 
+        //update wall sprites to connect after all walls are placed
         for (int x = 0; x < width; ++x)
         {
             for (int y = 0; y < height; ++y)
@@ -102,6 +110,8 @@ public class MazeMapGenerator : MapGenerator
         }
     }
 
+    //checks if a position on map is valid for door placement 
+    //and if so places the correct, randomized doords from sent prefabs
     private void TryPlaceDoor(Map map, GameObject[,] wallLayerTiles, GameObject[] horizontalDoorPrefabs, GameObject[] verticalDoorPrefabs, Coords2 coords)
     {
         if (coords.x <= 1 || coords.y <= 1 || coords.x >= map.width || coords.y >= map.height) return;
@@ -135,6 +145,7 @@ public class MazeMapGenerator : MapGenerator
         BacktrackCarve(map, wallLayerTiles, new Coords2(1, 1));
     }
 
+    //recursively remove walls to form a maze
     private void BacktrackCarve(Map map, GameObject[,] wallLayerTiles, Coords2 coords)
     {
         int[] order = { 0, 1, 2, 3 };
@@ -158,6 +169,8 @@ public class MazeMapGenerator : MapGenerator
         }
     }
 
+    //utility funcions
+    //TODO: move them to a separate location
     private static void Shuffle(int[] array)
     {
         for (int i = 0; i < array.Length; ++i)

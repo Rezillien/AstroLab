@@ -35,7 +35,7 @@
     float4 _PlayerPos;
     sampler2D _MainTex;
     float4 _MainTex_ST;
-    float4 _CamerasPos0;
+    float4 _CamerasPos0; //Inlined array of camera positions with preset count of 16.
     float4 _CamerasPos1;
     float4 _CamerasPos2;
     float4 _CamerasPos3;
@@ -65,7 +65,7 @@
         int iterations = 8;
 
         float4 c1;
-        float2 dt = (t1 - t0) / iterations;
+        float2 dt = (t1 - t0) / iterations; //step size
         float solidBlocking = 40 * length(dt); // light blocking coeficient of solids
         float airBlocking = 2 * length(dt); // light blocking coeficient of air
         float2 t = t0;
@@ -109,6 +109,9 @@
         */
         float4 col = float4(0.0, 0.0, 0.0, 1.0); 
         col = min(col, raycastColor(input.texcoord, _PlayerPos.xy, 1.0));
+        //inlined due to problems with accessing uniform arrays
+        //z coordinates of _CamerasPosX stores information about camera state
+        //w is currently unused
         col = min(col, raycastColor(input.texcoord, _CamerasPos0.xy, _CamerasPos0.z));
         col = min(col, raycastColor(input.texcoord, _CamerasPos1.xy, _CamerasPos1.z));
         col = min(col, raycastColor(input.texcoord, _CamerasPos2.xy, _CamerasPos2.z));

@@ -30,6 +30,12 @@ public class ConnectedWallController : WallTileController
         SpriteSet sprites = gameObject.GetComponent<SpriteSet>();
         Map map = GameManager.instance.GetMap();
 
+        //choose sprite based on neighbour existence, sprites are set up in a correct order
+        //uses bitmask
+        //north adds 0x1
+        //east adds  0x2
+        //south adds 0x4
+        //west adds  0x8
         int spriteId = 0;
         GameObject north = map.GetWallTileNorthOf(coords);
         GameObject east = map.GetWallTileEastOf(coords);

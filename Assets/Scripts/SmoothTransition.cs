@@ -4,12 +4,12 @@ using System.Collections;
 //Class for representing smooth movement, linearly interpolates position on in time
 class SmoothTransition
 {
-    public float totalDuration;
-    public float animationTimeLeft;
-    public Coords2 initialCoords;
-    public Coords2 finalCoords;
+    private float totalDuration;
+    private float animationTimeLeft;
+    private Vector3 initialCoords;
+    private Vector3 finalCoords;
 
-    public SmoothTransition(Coords2 _initialCoords, Coords2 _finalCoords, float _totalDuration)
+    public SmoothTransition(Vector3 _initialCoords, Vector3 _finalCoords, float _totalDuration)
     {
         totalDuration = _totalDuration;
         animationTimeLeft = _totalDuration;

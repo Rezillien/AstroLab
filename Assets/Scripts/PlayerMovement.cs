@@ -40,7 +40,7 @@ public class PlayerMovement : MonoBehaviour
 
         if ((dx != 0 || dy != 0) && !map.HasCollider(new Coords2(x + dx, y + dy)))
         {
-            moveAnimation = new SmoothTransition(new Coords2(x, y), new Coords2(x + dx, y + dy), 0.25f);
+            moveAnimation = new SmoothTransition(new Vector3(x, y, 0.0f), new Vector3(x + dx, y + dy, 0.0f), 0.25f);
             x += dx;
             y += dy;
 

@@ -5,6 +5,7 @@ using Random = UnityEngine.Random;
 
 public class Map : MonoBehaviour
 {
+    //events
     public delegate void WallTileChangedEventHandler(Coords2 coords);
     public event WallTileChangedEventHandler OnWallTileChanged;
 
@@ -30,6 +31,7 @@ public class Map : MonoBehaviour
         return coords.x >= 0 && coords.y >= 0 && coords.x < width && coords.y < height;
     }
 
+    //return true if tile has boxcollider if wall controller is not present or value specified by wallcontroller
     public bool HasCollider(Coords2 coords)
     {
         GameObject tile = GetWallTile(coords);
@@ -44,6 +46,8 @@ public class Map : MonoBehaviour
 
         return controller.HasCollider();
     }
+
+    //return 1.0f if tile has boxcollider if wall controller is not present or value specified by wallcontroller
     public float Opacity(Coords2 coords)
     {
         GameObject tile = GetWallTile(coords);
@@ -59,11 +63,13 @@ public class Map : MonoBehaviour
         return controller.Opacity();
     }
 
+    //emit event
     private void WallTileChanged(Coords2 coords)
     {
         if (OnWallTileChanged != null) OnWallTileChanged(coords);
     }
 
+    //requires wall to have wallcontroler
     private bool InteractWall(Coords2 coords, GameObject player)
     {
         GameObject tile = GetWallTile(coords);
@@ -77,6 +83,8 @@ public class Map : MonoBehaviour
         return interacted;
     }
 
+    //requires object to have worldobjectcontroller
+    //should be called when wallobjectcontroller.interact returns false or is not called
     private bool InteractObject(Coords2 coords, GameObject player)
     {
         GameObject tile = GetWorldObject(coords);
@@ -93,7 +101,7 @@ public class Map : MonoBehaviour
         return InteractWall(coords, player) || InteractObject(coords, player);
     }
 
-    //sets reference
+    //only sets reference to passed tile
     private GameObject SetTile(Coords2 coords, GameObject tile, GameObject[,] layer)
     {
         if (!IsInsideBounds(coords)) return null;
@@ -103,7 +111,6 @@ public class Map : MonoBehaviour
         return tile;
     }
 
-    //sets reference
     public GameObject SetFloorTile(Coords2 coords, GameObject tile)
     {
         return SetTile(coords, tile, floorTileLayer);

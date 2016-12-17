@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class FogController : MonoBehaviour
 {
-
+    //specifies camera world object
     private class Camera
     {
         public Vector2 origin;
@@ -13,7 +13,7 @@ public class FogController : MonoBehaviour
         public int shaderPropertyId;
     }
 
-    private const int maxNumberOfCameras = 16;
+    private const int maxNumberOfCameras = 16; //currently can't be changed without also changing shader
 
     private Texture2D texture;
     private Sprite sprite;
@@ -31,10 +31,12 @@ public class FogController : MonoBehaviour
         playerTransform = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>().transform;
         map = GameManager.instance.GetMap();
 
+        //fog texture creation
         textureSize = Mathf.Max(map.width, map.height);
         texture = new Texture2D(textureSize, textureSize, TextureFormat.RGBAFloat, false, true);
         texture.wrapMode = TextureWrapMode.Repeat;
 
+        //initial fill
         Color[] colors = new Color[textureSize * textureSize];
         for (int y = 0, i = 0; y < textureSize; ++y)
         {
@@ -51,10 +53,12 @@ public class FogController : MonoBehaviour
         SpriteRenderer spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         Transform transform = gameObject.GetComponent<Transform>();
         material = spriteRenderer.material;
+        //to render in correct order (closer to the camera, after board is rendered)
         material.renderQueue = 3001;
         material.mainTexture = texture;
         material.SetInt(Shader.PropertyToID("_TextureSize"), textureSize);
 
+        //retrieve and set uniform ids for later use
         cameras = new Dictionary<Coords2, Camera>();
         unusedShaderPropertyIds = new Stack<int>();
         for (int i = 0; i < maxNumberOfCameras; ++i)
@@ -64,15 +68,16 @@ public class FogController : MonoBehaviour
             material.SetVector(currentId, new Vector4(0.0f, 0.0f, 0.0f, 0.0f));
         }
 
+        //to match the board
         spriteRenderer.sprite = sprite;
         transform.position = new Vector3(-0.5f, -0.5f, 0);
         transform.localScale = new Vector3(100, 100, 1.0f);
 
+        //subscibe for map event
         map.OnWallTileChanged += new Map.WallTileChangedEventHandler(OnWallTileChanged);
         CameraObjectController.OnCameraStateChanged += new CameraObjectController.CameraStateChangedEventHandler(OnCameraStateChanged);
     }
-
-    // Update is called once per frame
+    
     void Update()
     {
         if (textureChanged) texture.Apply();
@@ -113,6 +118,8 @@ public class FogController : MonoBehaviour
 
     void UpdateShaderProperty(Camera camera)
     {
+        //z coordinates stores information about camera state
+        //w is currently unused
         Vector4 newProperty = new Vector4(camera.origin.x / textureSize, camera.origin.y / textureSize, (camera.isOn ? 1.0f : 0.0f), 0.0f);
         material.SetVector(camera.shaderPropertyId, newProperty);
     }
@@ -127,9 +134,11 @@ public class FogController : MonoBehaviour
         }
         else
         {
+            //if camera is not found in registry create a new one
             camera = new Camera();
             camera.origin = cameraController.GetOrigin();
             camera.isOn = cameraController.IsOn();
+            //get an unused shader property id from stack to use for that camera
             camera.shaderPropertyId = unusedShaderPropertyIds.Pop();
             cameras.Add(coords, camera);
         }
