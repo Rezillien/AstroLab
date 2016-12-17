@@ -22,6 +22,11 @@ public struct Coords2 {
         return new Coords2(c1.x - c2.x, c1.y - c2.y);
     }
 
+    public static Coords2 operator*(Coords2 c, int s)
+    {
+        return new Coords2(c.x * s, c.y * s);
+    }
+
     public static Coords2 operator-(Coords2 c)
     {
         return new Coords2(-c.x, -c.y);

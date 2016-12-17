@@ -9,7 +9,7 @@ public class ReparableObjectController : WorldObjectController
     {
         CompletelyRepaird,
         Broken,
-        PartlyRepaired,
+        PartiallyRepaired,
     };
 
     public SpriteRenderer sprite { get; set; }
