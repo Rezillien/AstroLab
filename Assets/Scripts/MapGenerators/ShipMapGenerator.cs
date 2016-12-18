@@ -70,11 +70,12 @@ public class ShipMapGenerator : MapGenerator
 
     public int polygonSize = 64;
     //in tile sizes
-    public float minDepth = 10.0f;
+    public float minRadius = 10.0f;
     public float noiseSampleRange = 10000.0f;
     public bool isSymetrical = true;
     public int minRoomSize = 6;
     public int maxRoomSize = 60;
+    public int numberOfAdditionalWorkingConnections = 10;
 
     private int width;
     private int height;
@@ -142,6 +143,8 @@ public class ShipMapGenerator : MapGenerator
         FillSmallRooms();
         CloseDiagonals();
 
+        //there should be placed more processing
+
         CreatePossibleRoomConnections();
 
         FillWallTilesOnBoundaries();
@@ -157,13 +160,9 @@ public class ShipMapGenerator : MapGenerator
     {
         FillRegionIds();
 
-        List<Connection>[] connections = new List<Connection>[nextRegionId]; //0th is unused because it's outside the ship
-        for (int i = 0; i < nextRegionId; ++i)
-        {
-            connections[i] = new List<Connection>();
-        }
+        List<Connection> connections = new List<Connection>();
 
-        Coords2[] directions = { new Coords2(0, 1), new Coords2(0, -1), new Coords2(1, 0), new Coords2(-1, 0) };
+        Coords2[] directions = { new Coords2(0, 1), new Coords2(1, 0) }; //only 2 directions to omit repetitions
 
         for (int x = 1; x < width - 1; ++x)
         {
@@ -172,7 +171,7 @@ public class ShipMapGenerator : MapGenerator
                 int currentRegionId = regionIds[x, y];
                 if (currentRegionId < 1) continue;
 
-                for (int d = 0; d < 4; ++d)
+                for (int d = 0; d < directions.Length; ++d)
                 {
                     Coords2 direction = directions[d];
                     int xx = x + direction.x;
@@ -185,7 +184,7 @@ public class ShipMapGenerator : MapGenerator
                         {
                             Coords2 destination = start + direction * connectionLength;
                             int destinationRegionId = regionIds[destination.x, destination.y];
-                            connections[currentRegionId].Add(new Connection(start, destination, direction, currentRegionId, destinationRegionId, connectionLength));
+                            connections.Add(new Connection(start, destination, direction, currentRegionId, destinationRegionId, connectionLength));
                         }
                     }
                 }
@@ -193,7 +192,7 @@ public class ShipMapGenerator : MapGenerator
         }
 
         List<Connection> chosenConnections = ChooseConnections(connections);
-        foreach(Connection con in chosenConnections)
+        foreach (Connection con in chosenConnections)
         {
             PlaceDoorInsideConnection(con);
         }
@@ -201,20 +200,98 @@ public class ShipMapGenerator : MapGenerator
 
     private void PlaceDoorInsideConnection(Connection con)
     {
-        int depth = Random.Range(1, con.length);
-        Coords2 pos = con.initialPosition + con.direction * depth;
-        wallLayerTiles[pos.x, pos.y] = horizontalDoorTilePrefabs[0];
-        isWall[pos.x, pos.y] = false;
+        int length = con.length;
+        Coords2 erasingPos = con.initialPosition;
+        Coords2 direction = con.direction;
+
+        int depth = Random.Range(1, length);
+        for (int i = 1; i < length; ++i)
+        {
+            erasingPos += direction;
+            isWall[erasingPos.x, erasingPos.y] = false;
+
+        }
+        Coords2 doorPos = con.initialPosition + direction * depth;
+
+        GameObject[] prefabs = direction.x == 0 ? verticalDoorTilePrefabs : horizontalDoorTilePrefabs;
+        wallLayerTiles[doorPos.x, doorPos.y] = RandomizeTile(prefabs);
     }
 
-    private List<Connection> ChooseConnections(List<Connection>[] allConnections)
+    private List<Connection> ChooseConnections(List<Connection> allConnections)
+    //kruskal's algorithm
     {
+
         List<Connection> chosenConnections = new List<Connection>();
-        
-        foreach(List<Connection> conlist in allConnections)
+
+        allConnections.Sort(
+            delegate (Connection c1, Connection c2)
+            {
+                Coords2 v1 = c1.finalPosition - c1.initialPosition;
+                Coords2 v2 = c2.finalPosition - c2.initialPosition;
+                int len1 = v1.x + v1.y;
+                int len2 = v2.x + v2.y;
+                return len1.CompareTo(len2);
+            }
+            );
+
+        HashSet<int>[] vertexSets = new HashSet<int>[nextRegionId];
+        for (int i = 1; i < nextRegionId; ++i)
         {
-            if (conlist.Count == 0) continue;
-            chosenConnections.Add(conlist[Random.Range(0, conlist.Count)]);
+            vertexSets[i] = new HashSet<int>();
+            vertexSets[i].Add(i);
+        }
+
+        int currentConnectionIndex = 0;
+        while (chosenConnections.Count < nextRegionId - 1 && currentConnectionIndex < allConnections.Count)
+        {
+            Connection currentConnection = allConnections[currentConnectionIndex];
+
+            int initialRegionId = currentConnection.initialRegionId;
+            int finalRegionId = currentConnection.finalRegionId;
+
+            if (vertexSets[initialRegionId] == vertexSets[finalRegionId])
+            {
+                ++currentConnectionIndex;
+                continue; //compare references
+            }
+
+            chosenConnections.Add(currentConnection);
+            foreach (int r in vertexSets[finalRegionId])
+            {
+                vertexSets[initialRegionId].Add(r);
+                vertexSets[r] = vertexSets[initialRegionId]; //set all vertices in the set to have the same reference
+            }
+
+            ++currentConnectionIndex;
+        }
+
+        currentConnectionIndex = 0;
+        //adds some additional connections to make cycles
+        int additionalConnectionsPlaced = 0;
+        while (additionalConnectionsPlaced < numberOfAdditionalWorkingConnections && currentConnectionIndex < allConnections.Count)
+        {
+            Connection currentConnection = allConnections[currentConnectionIndex];
+
+            int initialRegionId = currentConnection.initialRegionId;
+            int finalRegionId = currentConnection.finalRegionId;
+
+            bool sameFound = false;
+            foreach (Connection con in chosenConnections)
+            {
+                if ((con.initialRegionId == initialRegionId && con.finalRegionId == finalRegionId) ||
+                   (con.finalRegionId == initialRegionId && con.initialRegionId == finalRegionId))
+                {
+                    sameFound = true;
+                    break;
+                }
+            }
+
+            if (!sameFound)
+            {
+                chosenConnections.Add(currentConnection);
+                ++additionalConnectionsPlaced;
+            }
+            ++currentConnectionIndex;
         }
 
         return chosenConnections;
@@ -232,7 +309,7 @@ public class ShipMapGenerator : MapGenerator
             Coords2 perp1 = new Coords2(x, y) + perpToDirection;
             Coords2 perp2 = new Coords2(x, y) - perpToDirection;
             if (!isInsideBounds(perp1.x, perp1.y) || !isWall[perp1.x, perp1.y]) return 0; //connection must have walls on each side through whole length
-            if (!isInsideBounds(perp2.x, perp2.y) || !isWall[perp2.x, perp2.y]) return 0; 
+            if (!isInsideBounds(perp2.x, perp2.y) || !isWall[perp2.x, perp2.y]) return 0;
 
             ++length;
             x += direction.x;
@@ -529,23 +606,25 @@ public class ShipMapGenerator : MapGenerator
         }
     }
 
-    private void GetTilesInsideRoomAndFill(List<Coords2> tiles, Coords2 pos, bool[,] isWall)
+    private void GetTilesInsideRoomAndFill(List<Coords2> tiles, Coords2 startPos, bool[,] isWall)
     {
-        int x = pos.x;
-        int y = pos.y;
-        if (isWall[x, y])
+        Stack<Coords2> callStack = new Stack<Coords2>();
+        callStack.Push(new Coords2(startPos.x, startPos.y));
+
+        while (callStack.Count > 0)
         {
-            return;
-        }
-        else
-        {
+            Coords2 pos = callStack.Pop();
+            int x = pos.x;
+            int y = pos.y;
+
             isWall[x, y] = true;
 
             tiles.Add(new Coords2(x, y));
-            if (x > 0) GetTilesInsideRoomAndFill(tiles, new Coords2(x - 1, y), isWall);
-            if (y > 0) GetTilesInsideRoomAndFill(tiles, new Coords2(x, y - 1), isWall);
-            if (x < width - 1) GetTilesInsideRoomAndFill(tiles, new Coords2(x + 1, y), isWall);
-            if (y < height - 1) GetTilesInsideRoomAndFill(tiles, new Coords2(x, y + 1), isWall);
+
+            if (x > 0 && !isWall[x - 1, y]) callStack.Push(new Coords2(x - 1, y));
+            if (y > 0 && !isWall[x, y - 1]) callStack.Push(new Coords2(x, y - 1));
+            if (x < width - 1 && !isWall[x + 1, y]) callStack.Push(new Coords2(x + 1, y));
+            if (y < height - 1 && !isWall[x, y + 1]) callStack.Push(new Coords2(x, y + 1));
         }
     }
 
@@ -616,8 +695,10 @@ public class ShipMapGenerator : MapGenerator
     {
         Vector2[] polygon = new Vector2[polygonSize];
 
-        float maxDepth = Mathf.Min(width / 2 - 1, height / 2 - 1);
+        float maxRadius = Mathf.Min(width / 2 - 1, height / 2 - 1);
         float sampleRadius = 1.0f;
+        float widthMul = width / (float)Mathf.Min(width, height);
+        float heightMul = height / (float)Mathf.Min(width, height);
         Vector2 sampleOrigin = new Vector2(
             Random.Range(-noiseSampleRange, noiseSampleRange),
             Random.Range(-noiseSampleRange, noiseSampleRange)
@@ -627,7 +708,7 @@ public class ShipMapGenerator : MapGenerator
         for (int i = 0; i < polygonSize; ++i)
         {
             float angle = 2 * Mathf.PI * ((float)i / (float)polygonSize) - Mathf.PI * 0.5f;
-            Vector2 direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+            Vector2 direction = new Vector2(Mathf.Cos(angle) * widthMul, Mathf.Sin(angle) * heightMul);
             if (isSymetrical && i > polygonSize / 2)
             {
                 angle = Mathf.PI - angle;
@@ -637,9 +718,9 @@ public class ShipMapGenerator : MapGenerator
             float n = Mathf.PerlinNoise(samplePos.x, samplePos.y);
             n = 1.0f - n * n; //change distribution
 
-            float depth = minDepth + (maxDepth - minDepth) * n;
+            float radius = minRadius + (maxRadius - minRadius) * n;
 
-            polygon[i] = direction * depth + boardCenter;
+            polygon[i] = direction * radius + boardCenter;
 
         }
 
