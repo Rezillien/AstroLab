@@ -3,14 +3,7 @@ using System.Collections.Generic;
 
 public class ShipMapGenerator : MapGenerator
 {
-    enum Door
-    {
-        None,
-        Horizontal,
-        Vertical
-    }
-
-
+    //holds coordinates of tiles strictly inside the room (bounded by walls)
     private class Room
     {
         public List<Coords2> tiles;
@@ -21,33 +14,7 @@ public class ShipMapGenerator : MapGenerator
         }
     }
 
-    private class AABB
-    {
-        public int minX;
-        public int minY;
-        public int maxX;
-        public int maxY;
-
-        public AABB(int minX, int minY, int maxX, int maxY)
-        {
-            this.minX = minX;
-            this.minY = minY;
-            this.maxX = maxX;
-            this.maxY = maxY;
-        }
-
-        public int width()
-        {
-            return maxX - minX;
-        }
-
-        public int height()
-        {
-            return maxY - minY;
-        }
-    }
-
-    private class Connection
+    private class RoomConnection
     {
         public Coords2 initialPosition;
         public Coords2 finalPosition;
@@ -56,7 +23,7 @@ public class ShipMapGenerator : MapGenerator
         public int finalRegionId;
         public int length;
 
-        public Connection(Coords2 initialPosition, Coords2 finalPosition, Coords2 direction, int initialRegionId, int finalRegionId, int length)
+        public RoomConnection(Coords2 initialPosition, Coords2 finalPosition, Coords2 direction, int initialRegionId, int finalRegionId, int length)
         {
             this.initialPosition = initialPosition;
             this.finalPosition = finalPosition;
@@ -77,7 +44,7 @@ public class ShipMapGenerator : MapGenerator
     public int maxRoomSize = 60;
     public int numberOfAdditionalWorkingConnections = 10;
 
-    private int width;
+    private int width; //these are used throughout the process of map generation to minimize number of parameters being passed
     private int height;
     private bool[,] isWall;
     private int[,] regionIds;
@@ -91,8 +58,6 @@ public class ShipMapGenerator : MapGenerator
     GameObject[,] floorLayerTiles;
     GameObject[,] wallLayerTiles;
     GameObject[,] worldObjectLayer;
-
-    Door[,] doors;
 
     Map map;
 
@@ -119,35 +84,36 @@ public class ShipMapGenerator : MapGenerator
         floorLayerTiles = new GameObject[width, height];
         wallLayerTiles = new GameObject[width, height];
         worldObjectLayer = new GameObject[width, height];
-        FillLayer(floorLayerTiles, null);
-        FillLayer(wallLayerTiles, null);
-        FillLayer(worldObjectLayer, null);
+        Util.Fill(floorLayerTiles, null);
+        Util.Fill(wallLayerTiles, null);
+        Util.Fill(worldObjectLayer, null);
 
+        //generates boundaries of the ship contained inside map
         Vector2[] boundingPolygon = GenerateRandomPolygon();
         isWall = new bool[width, height];
-        for (int i = 0; i < width; ++i)
-        {
-            for (int j = 0; j < height; ++j)
-            {
-                isWall[i, j] = false;
-            }
-        }
+        Util.Fill(isWall, false);
 
-
+        //fill walls of the ship based on the generated polygon
         MarkBorder(boundingPolygon);
-        CloseDiagonals(); //has to be done here (and later) to maintain ship shape
+        
+        // .X  -->  XX
+        // X.       X.
+        CloseDiagonalWalls(); //has to be done here (and later) to maintain ship shape
 
-        FillFloorTilesInside(new Coords2(width / 2, height / 2));
+        //Fill the whole spaceship
+        FillFloorTilesInsideRoom(new Coords2(width / 2, height / 2));
 
+        //subdivide the spaceship to form rooms of desired size
         SubdivideRecursively();
         FillSmallRooms();
-        CloseDiagonals();
+        //again, because subdivision may have created diagonal walls
+        CloseDiagonalWalls();
 
-        //there should be placed more processing
+        //more processing should be placed here
 
-        CreatePossibleRoomConnections();
+        CreateRoomConnections();
 
-        FillWallTilesOnBoundaries();
+        FillWallTiles();
 
         InstantiateTiles();
 
@@ -156,17 +122,18 @@ public class ShipMapGenerator : MapGenerator
         map.startY = height / 2;
     }
 
-    private void CreatePossibleRoomConnections()
+    private void CreateRoomConnections()
     {
         FillRegionIds();
 
-        List<Connection> connections = new List<Connection>();
+        List<RoomConnection> connections = new List<RoomConnection>();
 
         Coords2[] directions = { new Coords2(0, 1), new Coords2(1, 0) }; //only 2 directions to omit repetitions
 
-        for (int x = 1; x < width - 1; ++x)
+        //tries to 'carve' to the other room, saves the connection info if succesful
+        for (int x = 0; x < width - 1; ++x)
         {
-            for (int y = 1; y < height - 1; ++y)
+            for (int y = 0; y < height - 1; ++y)
             {
                 int currentRegionId = regionIds[x, y];
                 if (currentRegionId < 1) continue;
@@ -184,21 +151,22 @@ public class ShipMapGenerator : MapGenerator
                         {
                             Coords2 destination = start + direction * connectionLength;
                             int destinationRegionId = regionIds[destination.x, destination.y];
-                            connections.Add(new Connection(start, destination, direction, currentRegionId, destinationRegionId, connectionLength));
+                            connections.Add(new RoomConnection(start, destination, direction, currentRegionId, destinationRegionId, connectionLength));
                         }
                     }
                 }
             }
         }
 
-        List<Connection> chosenConnections = ChooseConnections(connections);
-        foreach (Connection con in chosenConnections)
+        List<RoomConnection> chosenConnections = ChooseConnections(connections);
+        foreach (RoomConnection con in chosenConnections)
         {
             PlaceDoorInsideConnection(con);
         }
     }
 
-    private void PlaceDoorInsideConnection(Connection con)
+    //removes walls and places door on random location on path
+    private void PlaceDoorInsideConnection(RoomConnection con)
     {
         int length = con.length;
         Coords2 erasingPos = con.initialPosition;
@@ -217,14 +185,15 @@ public class ShipMapGenerator : MapGenerator
         wallLayerTiles[doorPos.x, doorPos.y] = RandomizeTile(prefabs);
     }
 
-    private List<Connection> ChooseConnections(List<Connection> allConnections)
-    //kruskal's algorithm
+    //creates minimal spanning tree between rooms using kurskal's algorithm
+    //adds specified number of additional connections to form cycles
+    private List<RoomConnection> ChooseConnections(List<RoomConnection> allConnections)
     {
 
-        List<Connection> chosenConnections = new List<Connection>();
+        List<RoomConnection> chosenConnections = new List<RoomConnection>();
 
         allConnections.Sort(
-            delegate (Connection c1, Connection c2)
+            delegate (RoomConnection c1, RoomConnection c2)
             {
                 Coords2 v1 = c1.finalPosition - c1.initialPosition;
                 Coords2 v2 = c2.finalPosition - c2.initialPosition;
@@ -244,7 +213,7 @@ public class ShipMapGenerator : MapGenerator
         int currentConnectionIndex = 0;
         while (chosenConnections.Count < nextRegionId - 1 && currentConnectionIndex < allConnections.Count)
         {
-            Connection currentConnection = allConnections[currentConnectionIndex];
+            RoomConnection currentConnection = allConnections[currentConnectionIndex];
 
             int initialRegionId = currentConnection.initialRegionId;
             int finalRegionId = currentConnection.finalRegionId;
@@ -265,18 +234,18 @@ public class ShipMapGenerator : MapGenerator
             ++currentConnectionIndex;
         }
 
+        //adds some additional connections to form cycles
         currentConnectionIndex = 0;
-        //adds some additional connections to make cycles
         int additionalConnectionsPlaced = 0;
         while (additionalConnectionsPlaced < numberOfAdditionalWorkingConnections && currentConnectionIndex < allConnections.Count)
         {
-            Connection currentConnection = allConnections[currentConnectionIndex];
+            RoomConnection currentConnection = allConnections[currentConnectionIndex];
 
             int initialRegionId = currentConnection.initialRegionId;
             int finalRegionId = currentConnection.finalRegionId;
 
             bool sameFound = false;
-            foreach (Connection con in chosenConnections)
+            foreach (RoomConnection con in chosenConnections)
             {
                 if ((con.initialRegionId == initialRegionId && con.finalRegionId == finalRegionId) ||
                    (con.finalRegionId == initialRegionId && con.initialRegionId == finalRegionId))
@@ -297,6 +266,7 @@ public class ShipMapGenerator : MapGenerator
         return chosenConnections;
     }
 
+    //tries to carve through walls
     private int TryMakeConnection(Coords2 pos, Coords2 direction, int currentRegionId)
     {
         Coords2 perpToDirection = new Coords2(direction.y, direction.x);
@@ -321,7 +291,7 @@ public class ShipMapGenerator : MapGenerator
         return length;
     }
 
-    private void CloseDiagonals()
+    private void CloseDiagonalWalls()
     {
         for (int x = 0; x < width - 1; ++x)
         {
@@ -360,14 +330,7 @@ public class ShipMapGenerator : MapGenerator
 
     private List<Room> GetAllRooms()
     {
-        bool[,] isWallLocal = new bool[width, height];
-        for (int x = 0; x < width; ++x)
-        {
-            for (int y = 0; y < height; ++y)
-            {
-                isWallLocal[x, y] = isWall[x, y];
-            }
-        }
+        bool[,] isWallLocal = isWall.Clone() as bool[,];
 
         List<Room> rooms = new List<Room>();
         for (int x = 0; x < width; ++x)
@@ -387,6 +350,10 @@ public class ShipMapGenerator : MapGenerator
         return rooms;
     }
 
+    //fills the regionIds array
+    //0 - outside
+    //-1 - wall
+    //>0 - regions inside the ship
     private void FillRegionIds()
     {
         regionIds = new int[width, height];
@@ -395,7 +362,6 @@ public class ShipMapGenerator : MapGenerator
             for (int y = 0; y < height; ++y)
             {
                 regionIds[x, y] = (isWall[x, y] ? -1 : 0); //0 is a region outside the ship, -1 is a wall
-
             }
         }
         List<Room> rooms = GetAllRooms();
@@ -412,6 +378,8 @@ public class ShipMapGenerator : MapGenerator
 
         nextRegionId = currentId;
     }
+
+    
     private void SubdivideRecursively()
     {
         List<Room> rooms = GetAllRooms();
@@ -469,6 +437,7 @@ public class ShipMapGenerator : MapGenerator
     {
         Coords2 divisionPoint = SampleClosePoint(room.tiles, AveragePoint(room.tiles), Mathf.Max(1, Mathf.RoundToInt(Mathf.Pow(room.tiles.Count, 0.3f))));
 
+        //directions which will span the new walls
         Coords2[,] directionCombinations =
         {
             //first direction, second direction
@@ -484,6 +453,7 @@ public class ShipMapGenerator : MapGenerator
         Coords2 d1 = directionCombinations[r, 0];
         Coords2 d2 = directionCombinations[r, 1];
 
+        //span the new walls until another wall is hit
         int dx = 0;
         int dy = 0;
         while (true)
@@ -510,20 +480,14 @@ public class ShipMapGenerator : MapGenerator
             dy += d2.y;
         }
 
-        bool[,] isWallLocal = new bool[width, height];
-        for (int x = 0; x < width; ++x)
-        {
-            for (int y = 0; y < height; ++y)
-            {
-                isWallLocal[x, y] = isWall[x, y];
-            }
-        }
+        bool[,] isWallLocal = isWall.Clone() as bool[,];
 
+        //retrieve newly created rooms
         List<Room> createdRooms = new List<Room>();
         foreach (Coords2 tile in room.tiles)
         {
             List<Coords2> tilesInside = new List<Coords2>();
-            GetTilesInsideRoomAndFill(tilesInside, tile, isWallLocal); //modifies isBoundaryLocal
+            GetTilesInsideRoomAndFill(tilesInside, tile, isWallLocal); //modifies isWallLocal
             if (tilesInside.Count > 0)
             {
                 createdRooms.Add(new Room(tilesInside));
@@ -532,7 +496,7 @@ public class ShipMapGenerator : MapGenerator
         return createdRooms;
     }
 
-    private Vector2 AveragePoint(List<Coords2> points)
+    private Vector2 AveragePoint(List<Coords2> points) //this is not equivalent to center of mass
     {
         float sumX = 0.0f;
         float sumY = 0.0f;
@@ -547,6 +511,7 @@ public class ShipMapGenerator : MapGenerator
         return new Vector2(averageX, averageY);
     }
 
+    //samples n discrete points and returns the closest one to the reference point
     private Coords2 SampleClosePoint(List<Coords2> points, Vector2 reference, int numberOfSamples)
     {
         float minDistSquared = float.MaxValue;
@@ -568,6 +533,7 @@ public class ShipMapGenerator : MapGenerator
         return new Coords2(min.x, min.y);
     }
 
+    //instantiates tiles on the map
     private void InstantiateTiles()
     {
         int width = map.width;
@@ -632,22 +598,16 @@ public class ShipMapGenerator : MapGenerator
     {
         if (!isInsideBounds(origin.x, origin.y)) return new List<Coords2>();
 
-        bool[,] isWallLocal = new bool[width, height];
+        bool[,] isWallLocal = isWall.Clone() as bool[,];
         List<Coords2> tiles = new List<Coords2>();
-        for (int x = 0; x < width; ++x)
-        {
-            for (int y = 0; y < height; ++y)
-            {
-                isWallLocal[x, y] = isWall[x, y];
-            }
-        }
 
         GetTilesInsideRoomAndFill(tiles, origin, isWallLocal);
 
         return tiles;
     }
 
-    private void FillFloorTilesInside(Coords2 origin)
+    //fills tiles inside the room and ALL walls
+    private void FillFloorTilesInsideRoom(Coords2 origin)
     {
         for (int x = 0; x < width; ++x)
         {
@@ -666,7 +626,7 @@ public class ShipMapGenerator : MapGenerator
         }
     }
 
-    private void FillWallTilesOnBoundaries()
+    private void FillWallTiles()
     {
         for (int x = 0; x < width; ++x)
         {
@@ -680,25 +640,18 @@ public class ShipMapGenerator : MapGenerator
         }
     }
 
-    private void FillLayer(GameObject[,] layer, GameObject prefab)
-    {
-        for (int x = 0; x < width; ++x)
-        {
-            for (int y = 0; y < height; ++y)
-            {
-                layer[x, y] = prefab;
-            }
-        }
-    }
-
+    //generates pseudo random polygon inside map's bounds using perlin noise
     private Vector2[] GenerateRandomPolygon()
     {
         Vector2[] polygon = new Vector2[polygonSize];
 
         float maxRadius = Mathf.Min(width / 2 - 1, height / 2 - 1);
         float sampleRadius = 1.0f;
+        //in case when width != height to maintain map ratio
         float widthMul = width / (float)Mathf.Min(width, height);
         float heightMul = height / (float)Mathf.Min(width, height);
+
+        //choose origin for samples on 'perlin noise value space'
         Vector2 sampleOrigin = new Vector2(
             Random.Range(-noiseSampleRange, noiseSampleRange),
             Random.Range(-noiseSampleRange, noiseSampleRange)
@@ -708,6 +661,7 @@ public class ShipMapGenerator : MapGenerator
         for (int i = 0; i < polygonSize; ++i)
         {
             float angle = 2 * Mathf.PI * ((float)i / (float)polygonSize) - Mathf.PI * 0.5f;
+            //direction is rescaled to match the map's ratio
             Vector2 direction = new Vector2(Mathf.Cos(angle) * widthMul, Mathf.Sin(angle) * heightMul);
             if (isSymetrical && i > polygonSize / 2)
             {
@@ -727,6 +681,7 @@ public class ShipMapGenerator : MapGenerator
         return polygon;
     }
 
+    // rasterizes polygon onto isWall array
     private void MarkBorder(Vector2[] polygon)
     {
         for (int i = 0; i < polygon.Length; ++i)
@@ -737,6 +692,7 @@ public class ShipMapGenerator : MapGenerator
         }
     }
 
+    // rasterizes line segment onto isWall array
     private void MarkBorder(Vector2 begin, Vector2 end)
     {
         Vector2 v = end - begin;

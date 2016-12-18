@@ -61,13 +61,13 @@
 
     float4 raycastColor(float2 t0, float2 t1, float contribution)
     {
-        int iterations = 12;
+        int iterations = 64;
 
         float4 c1;
-        float2 dt = (t1 - t0) / iterations; //step size
+        float2 dt = (t1 - t0) / (float)iterations; //step size
         float dtlen = length(dt);
-        float solidBlocking = 60; // light blocking coeficient of solids
-        float airBlocking = 1.5; // light blocking coeficient of air
+        float solidBlocking = 200; // light blocking coeficient of solids
+        float airBlocking = 5; // light blocking coeficient of air
         float2 t = t0;
         float opacity = 0;   //initially transparent
 
@@ -75,10 +75,11 @@
         {
             c1 = tex2D(_MainTex, t);
 
-            opacity += (c1.a*c1.a*solidBlocking) * dtlen + airBlocking * dtlen; //add opacity
+            opacity += (c1.a*c1.a*c1.a*solidBlocking) * dtlen; //add opacity
 
             t += dt;
         }
+        opacity += airBlocking * length(t1 - t0);
         
         return float4(0.0, 0.0, 0.0, opacity + (1.0 - opacity) * (1.0 - contribution));
     }

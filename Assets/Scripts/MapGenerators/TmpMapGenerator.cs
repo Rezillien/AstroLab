@@ -26,7 +26,7 @@ public class TmpMapGenerator : MapGenerator
         GameObject[] floorTilePrefabs = prefabs.floorTilePrefabs;
         GameObject[] verticalDoorTilePrefabs = prefabs.verticalDoorTilePrefabs;
         GameObject[] horizontalDoorTilePrefabs = prefabs.horizontalDoorTilePrefabs;
-        GameObject[] serverPrefarbs = prefabs.serverPrefabs;
+        GameObject[] serverPrefabs = prefabs.serverPrefabs;
 
         GameObject[,] floorLayerTiles = new GameObject[width, height];
         GameObject[,] wallLayerTiles = new GameObject[width, height];

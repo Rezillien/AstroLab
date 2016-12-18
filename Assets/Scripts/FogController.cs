@@ -35,6 +35,7 @@ public class FogController : MonoBehaviour
         textureSize = Mathf.Max(map.width, map.height);
         texture = new Texture2D(textureSize, textureSize, TextureFormat.RGBAFloat, false, true);
         texture.wrapMode = TextureWrapMode.Repeat;
+        //texture.filterMode = FilterMode.Point;
 
         //initial fill
         Color[] colors = new Color[textureSize * textureSize];
