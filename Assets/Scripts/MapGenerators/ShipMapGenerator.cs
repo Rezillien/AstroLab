@@ -48,6 +48,8 @@ public class ShipMapGenerator : MapGenerator
     private int height;
     private bool[,] isWall;
     private int[,] regionIds;
+    private Room[] roomRegions;
+    private float[] corridorFactors;
     private int nextRegionId;
 
     GameObject[] floorTilePrefabs;
@@ -95,7 +97,7 @@ public class ShipMapGenerator : MapGenerator
 
         //fill walls of the ship based on the generated polygon
         MarkBorder(boundingPolygon);
-        
+
         // .X  -->  XX
         // X.       X.
         CloseDiagonalWalls(); //has to be done here (and later) to maintain ship shape
@@ -109,7 +111,10 @@ public class ShipMapGenerator : MapGenerator
         //again, because subdivision may have created diagonal walls
         CloseDiagonalWalls();
 
+        FillRegionIdsAndRoomRegions();
+
         //more processing should be placed here
+        CalculateCorridorFactorsForRooms();
 
         CreateRoomConnections();
 
@@ -124,13 +129,11 @@ public class ShipMapGenerator : MapGenerator
 
     private void CreateRoomConnections()
     {
-        FillRegionIds();
-
         List<RoomConnection> connections = new List<RoomConnection>();
 
         Coords2[] directions = { new Coords2(0, 1), new Coords2(1, 0) }; //only 2 directions to omit repetitions
 
-        //tries to 'carve' to the other room, saves the connection info if succesful
+        //tries to 'carve' to the other room, saves the connection info if successful
         for (int x = 0; x < width - 1; ++x)
         {
             for (int y = 0; y < height - 1; ++y)
@@ -354,7 +357,7 @@ public class ShipMapGenerator : MapGenerator
     //0 - outside
     //-1 - wall
     //>0 - regions inside the ship
-    private void FillRegionIds()
+    private void FillRegionIdsAndRoomRegions()
     {
         regionIds = new int[width, height];
         for (int x = 0; x < width; ++x)
@@ -365,6 +368,8 @@ public class ShipMapGenerator : MapGenerator
             }
         }
         List<Room> rooms = GetAllRooms();
+        roomRegions = new Room[rooms.Count + 1]; //because acutal rooms are numbered starting with 1
+
         int currentId = 1;
         foreach (Room room in rooms)
         {
@@ -372,6 +377,7 @@ public class ShipMapGenerator : MapGenerator
             {
                 regionIds[tile.x, tile.y] = currentId;
             }
+            roomRegions[currentId] = room;
 
             ++currentId;
         }
@@ -379,7 +385,54 @@ public class ShipMapGenerator : MapGenerator
         nextRegionId = currentId;
     }
 
-    
+    private void CalculateCorridorFactorsForRooms()
+    {
+        corridorFactors = new float[roomRegions.Length];
+
+        for (int i = 1; i < roomRegions.Length; ++i)
+        {
+            Room room = roomRegions[i];
+            corridorFactors[i] = CalculateCorridorFactor(room);
+        }
+    }
+
+    private float CalculateCorridorFactor(Room room)
+    {
+        int neighbourThreshold = 6;
+        int corridorTileCount = 0;
+
+        foreach(Coords2 tile in room.tiles)
+        {
+            if (WallNeighbours(tile) >= neighbourThreshold)
+                corridorTileCount += 1;
+        }
+
+        return (float)corridorTileCount / room.tiles.Count;
+    }
+
+    private int WallNeighbours(Coords2 tile)
+    {
+        int wallNeighbourCount = 0;
+
+        int minX = Mathf.Max(0, tile.x - 1);
+        int minY = Mathf.Max(0, tile.y - 1);
+        int maxX = Mathf.Max(width - 1, tile.x + 1);
+        int maxY = Mathf.Max(height - 1, tile.y + 1);
+        
+        for(int x = minX; x <= maxX; ++x)
+        {
+            for(int y = minY; y <= maxY; ++y)
+            {
+                if (x == tile.x && y == tile.y) continue;
+
+                if (isWall[x, y])
+                    wallNeighbourCount += 1;
+            }
+        }
+
+        return wallNeighbourCount;
+    }
+
     private void SubdivideRecursively()
     {
         List<Room> rooms = GetAllRooms();
