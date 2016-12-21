@@ -36,4 +36,9 @@ public class WallTileController : MonoBehaviour
     {
 
     }
+
+    public virtual Coords2[] GetDummiesToCreate()
+    {
+        return new Coords2[0];
+    }
 }

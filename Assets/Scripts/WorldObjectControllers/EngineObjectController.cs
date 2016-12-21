@@ -6,7 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 public class EngineObjectController : ReparableObjectController
 {
     
-    void  PlayMiniGame()
+    public override void PlayMiniGame()
     {
         isGameOn = true;
         throw new NullReferenceException("Tutaj damy minigierke ;(");

@@ -3,16 +3,16 @@ using System.Collections;
 
 public class MultitileWorldObjectDummyController : WorldObjectController
 {
-    private GameObject owner;
+    private WorldObjectController ownerController;
     
     public void SetOwner(GameObject newOwner)
     {
-        owner = newOwner;
+        ownerController = newOwner.GetComponent<WorldObjectController>();
     }
 
     public override bool Interact(Coords2 coords, GameObject player)
     {
-        return owner.GetComponent<WorldObjectController>().Interact(coords, player);
+        return ownerController.Interact(coords, player);
     }
 
 }

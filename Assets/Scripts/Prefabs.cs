@@ -14,4 +14,5 @@ public class Prefabs : MonoBehaviour
     public GameObject serverPrefab;
 
     public GameObject multitileWorldObjectDummy;
+    public GameObject multitileWallDummy;
 }

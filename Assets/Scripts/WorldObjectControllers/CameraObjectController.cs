@@ -7,13 +7,11 @@ public class CameraObjectController : WorldObjectController {
     public delegate void CameraStateChangedEventHandler(Coords2 coords, CameraObjectController cameraController);
     static public event CameraStateChangedEventHandler OnCameraStateChanged;
 
-    private SpriteRenderer sprite;
     private Vector2 origin;
     private bool isOn;
 
     // Use this for initialization
     void Start () {
-        sprite = GetComponent<SpriteRenderer>();
         isOn = false;
 	}
 	

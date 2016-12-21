@@ -20,4 +20,9 @@ public class WorldObjectController : MonoBehaviour
     {
         return false;
     }
+
+    public virtual Coords2[] GetDummiesToCreate()
+    {
+        return new Coords2[0];
+    }
 }

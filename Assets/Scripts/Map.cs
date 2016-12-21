@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System;
 using System.Collections.Generic;
 using Random = UnityEngine.Random;
 
@@ -139,13 +138,43 @@ public class Map : MonoBehaviour
         return SetFloorTile(coords, Instantiate(tile, new Vector3(coords.x, coords.y, 0f), Quaternion.identity) as GameObject);
     }
 
+    private void CreateWorldObjectDummies(Coords2 coords, GameObject tile)
+    {
+        GameObject worldObjectDummyPrefab = GameManager.instance.GetPrefabs().multitileWorldObjectDummy;
+        WorldObjectController controller = tile.GetComponent<WorldObjectController>();
+        if (controller == null) return;
+        CreateDummies(coords, tile, worldObjectLayer, worldObjectDummyPrefab, controller.GetDummiesToCreate());
+    }
+    private void CreateWallDummies(Coords2 coords, GameObject tile)
+    {
+        GameObject wallDummyPrefab = GameManager.instance.GetPrefabs().multitileWallDummy;
+        WallTileController controller = tile.GetComponent<WallTileController>();
+        if (controller == null) return;
+        CreateDummies(coords, tile, wallTileLayer, wallDummyPrefab, controller.GetDummiesToCreate());
+    }
+
+    private void CreateDummies(Coords2 coords, GameObject tile, GameObject[,] layer, GameObject dummyPrefab, Coords2[] offsets)
+    {
+        foreach (Coords2 offset in offsets)
+        {
+            Coords2 pos = coords + offset;
+            GameObject dummy = Instantiate(dummyPrefab, new Vector3(pos.x, pos.y, 0f), Quaternion.identity) as GameObject;
+            dummy.GetComponent<MultitileWorldObjectDummyController>().SetOwner(tile);
+            SetTile(pos, dummy, layer);
+        }
+    }
+
     public GameObject CreateWallTile(Coords2 coords, GameObject tile)
     {
-        return SetWallTile(coords, Instantiate(tile, new Vector3(coords.x, coords.y, 0f), Quaternion.identity) as GameObject);
+        GameObject instantiated = Instantiate(tile, new Vector3(coords.x, coords.y, 0f), Quaternion.identity) as GameObject;
+        CreateWallDummies(coords, instantiated);
+        return SetWallTile(coords, instantiated);
     }
     public GameObject CreateWorldObject(Coords2 coords, GameObject tile)
     {
-        return SetWorldObject(coords, Instantiate(tile, new Vector3(coords.x, coords.y, 0f), Quaternion.identity) as GameObject);
+        GameObject instantiated = Instantiate(tile, new Vector3(coords.x, coords.y, 0f), Quaternion.identity) as GameObject;
+        CreateWorldObjectDummies(coords, instantiated);
+        return SetWorldObject(coords, instantiated);
     }
 
     private void RemoveTile(Coords2 coords, GameObject[,] layer)

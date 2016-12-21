@@ -37,10 +37,13 @@ public class ReparableObjectController : WorldObjectController
 
     public override bool Interact(Coords2 coords, GameObject player)
     {
-
         PlayMiniGame();
         //If we finish playing mini game we chage status to false 
         isGameOn = false;
         return true;
+    }
+    public override Coords2[] GetDummiesToCreate()
+    {
+        return new Coords2[0];
     }
 }
