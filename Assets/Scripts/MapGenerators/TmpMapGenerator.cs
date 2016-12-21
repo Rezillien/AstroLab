@@ -26,7 +26,7 @@ public class TmpMapGenerator : MapGenerator
         GameObject[] floorTilePrefabs = prefabs.floorTilePrefabs;
         GameObject[] verticalDoorTilePrefabs = prefabs.verticalDoorTilePrefabs;
         GameObject[] horizontalDoorTilePrefabs = prefabs.horizontalDoorTilePrefabs;
-        GameObject[] serverPrefabs = prefabs.serverPrefabs;
+        GameObject serverPrefab = prefabs.serverPrefab;
 
         GameObject[,] floorLayerTiles = new GameObject[width, height];
         GameObject[,] wallLayerTiles = new GameObject[width, height];
@@ -98,10 +98,7 @@ public class TmpMapGenerator : MapGenerator
         wallLayerTiles[crossX, doorY] = RandomizeTile(horizontalDoorTilePrefabs);
         worldObjectLayer[0, 1] = prefabs.cameraPrefab;
         worldObjectLayer[5, 5] = prefabs.enginePrefab;
-        worldObjectLayer[2, 3] = prefabs.serverPrefabs[0];
-        worldObjectLayer[3, 3] = prefabs.serverPrefabs[1];
-        worldObjectLayer[2, 2] = prefabs.serverPrefabs[2];
-        worldObjectLayer[3, 2] = prefabs.serverPrefabs[3];
+        worldObjectLayer[2, 3] = prefabs.serverPrefab;
         //worldObjectLayer[3, 4] = prefabs.enginePrefab;
         //instantiating tiles
         for (int x = 0; x < width; ++x)

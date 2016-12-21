@@ -4,7 +4,6 @@ using System.Collections;
 
 public class ReparableObjectController : WorldObjectController
 {
-
     public enum Status
     {
         CompletelyRepaird,
@@ -12,14 +11,12 @@ public class ReparableObjectController : WorldObjectController
         PartiallyRepaired,
     };
 
-    public SpriteRenderer sprite { get; set; }
     public bool isGameOn { get; set; }
     public Status status { get; set; }
 
     // Use this for initialization
     void Start()
     {
-        sprite = GetComponent<SpriteRenderer>();
         status = Status.Broken;
         isGameOn = false;
     }
@@ -31,7 +28,7 @@ public class ReparableObjectController : WorldObjectController
 
     }
 
-    void PlayMiniGame()
+    public virtual void PlayMiniGame()
     {
         //isGameOn = true;
         //Minigame returns status of object 
@@ -42,7 +39,8 @@ public class ReparableObjectController : WorldObjectController
     {
 
         PlayMiniGame();
-        //throw new NullReferenceException("xD");
+        //If we finish playing mini game we chage status to false 
+        isGameOn = false;
         return true;
     }
 }

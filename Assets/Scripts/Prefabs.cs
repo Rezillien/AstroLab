@@ -11,5 +11,7 @@ public class Prefabs : MonoBehaviour
     public GameObject cameraPrefab;
     public GameObject scenePrefab;
     public GameObject enginePrefab;
-    public GameObject[] serverPrefabs;
+    public GameObject serverPrefab;
+
+    public GameObject multitileWorldObjectDummy;
 }
