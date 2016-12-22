@@ -3,16 +3,24 @@ using System.Collections;
 
 public class DoorController : WallTileController
 {
+    public AudioClip[] openSounds;
+    public AudioClip[] closeSounds;
+    public float soundVolume = 0.4f;
 
     public Sprite closedSprite;
     public Sprite openedSprite;
     public bool isOpen;
 
+    private AudioSource audioSource;
+    private SpriteRenderer spriteRenderer;
+
     // Use this for initialization
     void Start()
     {
         isOpen = false;
-        GetComponent<SpriteRenderer>().sprite = closedSprite;
+        audioSource = GetComponent<AudioSource>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.sprite = closedSprite;
     }
 
     // Update is called once per frame
@@ -27,10 +35,18 @@ public class DoorController : WallTileController
         isOpen = !isOpen;
 
         Sprite spriteToUse;
-        if (isOpen) spriteToUse = openedSprite;
-        else spriteToUse = closedSprite;
+        if (isOpen)
+        {
+            audioSource.PlayOneShot(openSounds[Random.Range(0, openSounds.Length)], soundVolume);
+            spriteToUse = openedSprite;
+        }
+        else
+        {
+            audioSource.PlayOneShot(closeSounds[Random.Range(0, closeSounds.Length)], soundVolume);
+            spriteToUse = closedSprite;
+        }
 
-        GetComponent<SpriteRenderer>().sprite = spriteToUse;
+        spriteRenderer.sprite = spriteToUse;
 
         return true;
     }
