@@ -34,6 +34,8 @@ public  class TemperatureControl : MonoBehaviour
     public void setTemperature(int temp)
     {
         this.tempValue = temp;
+        if (temp > 20)
+            changeColor(0, 0, 0);
         
             
     }
@@ -41,6 +43,7 @@ public  class TemperatureControl : MonoBehaviour
     private void changeColor(int red, int green, int blue)
     { 
         GameObject gameObject = this.gameObject;
+        gameObject.GetComponent<SpriteRenderer>().color = Color.blue;
         
     }
 

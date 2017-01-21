@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class ScrewControler : MonoBehaviour {
 
@@ -8,9 +9,10 @@ public class ScrewControler : MonoBehaviour {
 
     private TemperatureControl temperatureControl;
 
+
     // Use this for initialization
     void Start () {
-	    
+      
 	}
 	
 	// Update is called once per frame
@@ -18,16 +20,16 @@ public class ScrewControler : MonoBehaviour {
 
         System.Random randomGenerator = new System.Random();
         int move=0;
-        if ((Input.GetKeyDown("up") || Input.GetKeyDown("down")) && !broken)
+        if ((Input.GetKeyDown("1") || Input.GetKeyDown("2")) && !broken)
         {
             int rnd = randomGenerator.Next(1, 7);
             if (initKeyPosition + rnd > 30)
                 broken = true;
-            if (Input.GetKeyDown("up"))
+            if (Input.GetKeyDown("1"))
             {
                 move = rnd;
             }
-            if (Input.GetKeyDown("down"))
+            if (Input.GetKeyDown("2"))
             {
                 move = -1 * rnd;
             }
@@ -38,7 +40,8 @@ public class ScrewControler : MonoBehaviour {
                 initKeyPosition = 0;
             }
             rotate(move);
-            
+           
+
         }
         
 
