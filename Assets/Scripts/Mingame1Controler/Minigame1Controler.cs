@@ -10,8 +10,9 @@ public class Minigame1Controler : MonoBehaviour {
     public GameObject temperaturePrefab;
     // Use this for initialization
     void Start () {
-        screwControler = Instantiate(screwPrefab).GetComponent<ScrewControler>();
-        temperatureControl = Instantiate(temperaturePrefab).GetComponent<TemperatureControl>();
+        screwControler = (Instantiate(screwPrefab,new Vector3(-40,-40,0), Quaternion.identity) as GameObject).GetComponent<ScrewControler>();
+
+        temperatureControl = (Instantiate(temperaturePrefab, new Vector3(-35, -40, 0), Quaternion.identity) as GameObject).GetComponent<TemperatureControl>();
         
 
 	}
