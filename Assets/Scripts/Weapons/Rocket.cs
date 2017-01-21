@@ -63,7 +63,7 @@ public class Rocket : BulletController
             }
         }
         GameObject explosion = Instantiate(explosionAnimation, new Vector3(centerOfExplosion.x, centerOfExplosion.y), Quaternion.identity) as GameObject;
-        explosion.transform.localScale = new Vector3(10.0f, 10.0f, 10.0f);
+        explosion.transform.localScale = new Vector3(2.0f, 2.0f, 2.0f);
         Destroy(explosion, 2.0f);
         isDead = true;
     }
