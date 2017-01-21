@@ -1,6 +1,10 @@
 fileFormatVersion: 2
 guid: bb3c02fd2331062439a61cad29fc3856
+<<<<<<< HEAD
 timeCreated: 1485012559
+=======
+timeCreated: 1485004039
+>>>>>>> hack3/kazior
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -92,10 +96,10 @@ TextureImporter:
       name: spritesAll_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 480
+        x: 160
+        y: 432
         width: 32
-        height: 32
+        height: 16
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
