@@ -16,8 +16,8 @@ public class BulletSystem {
 
     public void FixedUpdate()
     {
-        UpdateBullets();
         DeleteDeadBullets();
+        UpdateBullets();
     }
 
     public void AddBullet(BulletController newBullet)
@@ -68,6 +68,7 @@ public class BulletSystem {
                 GameObject wall = map.GetWallTile(coords);
                 if (wall == null) continue;
                 WallTileController controller = wall.GetComponent<WallTileController>();
+                if (controller == null) continue;
                 if(controller.HasCollider())
                 {
                     bullet.OnHitWall(controller);

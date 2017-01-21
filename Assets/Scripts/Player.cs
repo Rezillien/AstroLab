@@ -35,6 +35,7 @@ public class Player : MonoBehaviour
         //temporarily create only one needed for testing
         weapons[1] = Instantiate(GameManager.instance.GetPrefabs().weaponPrefabs[0]).GetComponent<WeaponController>();
         weapons[2] = Instantiate(GameManager.instance.GetPrefabs().weaponPrefabs[1]).GetComponent<WeaponController>();
+        weapons[3] = Instantiate(GameManager.instance.GetPrefabs().weaponPrefabs[2]).GetComponent<WeaponController>();
     }
 
     public void SetPosition(int _x, int _y)
