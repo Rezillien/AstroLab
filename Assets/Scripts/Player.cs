@@ -2,7 +2,7 @@
 using System;
 using UnityEngine.SceneManagement;  ////////////// change
 
-public class PlayerMovement : MonoBehaviour
+public class Player : MonoBehaviour
 {
     // position
     public int x;
@@ -53,8 +53,8 @@ public class PlayerMovement : MonoBehaviour
 
 
         //////changes
-       // if(Input.GetKey("y")) SceneManager.LoadScene("Minigame1", LoadSceneMode.Single);
-       // if(Input.GetKey("t")) SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
+        // if(Input.GetKey("y")) SceneManager.LoadScene("Minigame1", LoadSceneMode.Single);
+        // if(Input.GetKey("t")) SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
         ///////////
 
 
@@ -63,8 +63,8 @@ public class PlayerMovement : MonoBehaviour
             moveAnimation = new SmoothTransition(new Vector3(x, y, 0.0f), new Vector3(x + dx, y + dy, 0.0f), 0.25f);
             x += dx;
             y += dy;
-            
-      
+
+
             return true;
         }
 

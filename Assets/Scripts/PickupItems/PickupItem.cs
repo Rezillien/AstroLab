@@ -14,7 +14,7 @@ public class PickupItem : MonoBehaviour {
 	}
 
     //returns true if interaction succeded
-    public virtual bool Interact(PlayerMovement player)
+    public virtual bool Interact(Player player)
     {
         return false;
     }

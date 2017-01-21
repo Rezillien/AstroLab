@@ -30,7 +30,7 @@ public class DoorController : WallTileController
     }
 
     //Toggles between open/closed, returns true indicating that some action was performed
-    public override bool Interact(Coords2 coords, PlayerMovement player)
+    public override bool Interact(Coords2 coords, Player player)
     {
         isOpen = !isOpen;
 

@@ -44,7 +44,7 @@ public class CameraObjectController : WorldObjectController {
         transform.Rotate(new Vector3(0.0f, 0.0f, 1.0f), rotation, Space.Self);
     }
 
-    public override bool Interact(Coords2 coords, PlayerMovement player)
+    public override bool Interact(Coords2 coords, Player player)
     {
         SetEnabled(coords, !isOn);
 

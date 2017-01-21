@@ -25,7 +25,7 @@ public class PickupSystem {
         pickups.Add(newPickup);
     }
 
-    public bool OnInteractionAttempt(Vector2 position, PlayerMovement player)
+    public bool OnInteractionAttempt(Vector2 position, Player player)
     {
         int itemIndex = QueryPickupItem(position);
         if (itemIndex < 0) return false;

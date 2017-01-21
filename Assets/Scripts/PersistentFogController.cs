@@ -14,14 +14,14 @@ public class PersistentFogController : MonoBehaviour
     private Visibility[,] oldTileVisibility;
     private Visibility[,] tileVisibility;
     private Sprite sprite;
-    private PlayerMovement player;
+    private Player player;
     private Map map;
     private int textureSize;
     private bool textureChanged;
     
     void Start()
     {
-        player = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>();
+        player = GameObject.FindWithTag("Player").GetComponent<Player>();
         map = GameManager.instance.GetMap();
 
         textureSize = Mathf.Max(map.width, map.height);

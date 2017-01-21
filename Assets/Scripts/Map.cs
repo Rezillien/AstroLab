@@ -30,7 +30,7 @@ public class Map : MonoBehaviour
 
         mapGenerator.Generate(this);
 
-        PlayerMovement player = GameManager.instance.GetPlayer();
+        Player player = GameManager.instance.GetPlayer();
         player.SetPosition(startX, startY);
     }
 
@@ -78,7 +78,7 @@ public class Map : MonoBehaviour
     }
 
     //requires wall to have wallcontroler
-    private bool InteractWall(Coords2 coords, PlayerMovement player)
+    private bool InteractWall(Coords2 coords, Player player)
     {
         GameObject tile = GetWallTile(coords);
         if (tile == null) return false;
@@ -93,7 +93,7 @@ public class Map : MonoBehaviour
 
     //requires object to have worldobjectcontroller
     //should be called when wallobjectcontroller.interact returns false or is not called
-    private bool InteractObject(Coords2 coords, PlayerMovement player)
+    private bool InteractObject(Coords2 coords, Player player)
     {
         GameObject tile = GetWorldObject(coords);
         if (tile == null) return false;
@@ -104,21 +104,22 @@ public class Map : MonoBehaviour
         return controller.Interact(coords, player);
     }
     
-    public bool Interact(Coords2 coords, PlayerMovement player)
+    public bool Interact(Coords2 coords, Player player)
     {
         return InteractWall(coords, player) || InteractObject(coords, player);
     }
 
-    public bool Interact(Vector2 position, PlayerMovement player)
+    public bool Interact(Vector2 position, Player player)
     {
-        Coords2 coords = new Coords2(Mathf.FloorToInt(position.x + 0.5f), Mathf.FloorToInt(position.y + 0.5f));
-        if (Interact(coords, player)) return true;
+        //this should be done only when player is not standing on the interacted tile
+        //Coords2 coords = new Coords2(Mathf.FloorToInt(position.x + 0.5f), Mathf.FloorToInt(position.y + 0.5f));
+        //if (Interact(coords, player)) return true;
 
         return InteractWithPickupItems(position, player);
 
     }
 
-    private bool InteractWithPickupItems(Vector2 position, PlayerMovement player)
+    private bool InteractWithPickupItems(Vector2 position, Player player)
     {
         return pickupSystem.OnInteractionAttempt(position, player);
     }

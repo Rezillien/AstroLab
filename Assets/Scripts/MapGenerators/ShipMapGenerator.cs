@@ -122,17 +122,21 @@ public class ShipMapGenerator : MapGenerator
 
         InstantiateTiles();
 
+        List<Room> allRooms = GetAllRooms(); //temporary
+        Room randomRoom = allRooms[Random.Range(0, allRooms.Count)];
+        Coords2 randomPos = randomRoom.tiles[Random.Range(0, randomRoom.tiles.Count)];
+
+        map.startX = randomPos.x;
+        map.startY = randomPos.y;
+
         map.AddPickupItem(
             AmmoPickup.CreateFromPrefab(
                 prefabs.ammoPickupPrefab,
-                new Vector2(width / 2.0f, height / 2.0f),
+                new Vector2(randomPos.x, randomPos.y),
                 24,
                 0
             )
             );
-
-        map.startX = width / 2;
-        map.startY = height / 2;
     }
 
     private void CreateRoomConnections()
@@ -409,7 +413,7 @@ public class ShipMapGenerator : MapGenerator
         int neighbourThreshold = 6;
         int corridorTileCount = 0;
 
-        foreach(Coords2 tile in room.tiles)
+        foreach (Coords2 tile in room.tiles)
         {
             if (WallNeighbours(tile) >= neighbourThreshold)
                 corridorTileCount += 1;
@@ -426,10 +430,10 @@ public class ShipMapGenerator : MapGenerator
         int minY = Mathf.Max(0, tile.y - 1);
         int maxX = Mathf.Max(width - 1, tile.x + 1);
         int maxY = Mathf.Max(height - 1, tile.y + 1);
-        
-        for(int x = minX; x <= maxX; ++x)
+
+        for (int x = minX; x <= maxX; ++x)
         {
-            for(int y = minY; y <= maxY; ++y)
+            for (int y = minY; y <= maxY; ++y)
             {
                 if (x == tile.x && y == tile.y) continue;
 

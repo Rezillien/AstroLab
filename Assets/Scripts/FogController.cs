@@ -28,7 +28,7 @@ public class FogController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        playerTransform = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>().transform;
+        playerTransform = GameObject.FindWithTag("Player").GetComponent<Player>().transform;
         map = GameManager.instance.GetMap();
 
         //fog texture creation

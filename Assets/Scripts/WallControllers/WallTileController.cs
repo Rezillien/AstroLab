@@ -18,7 +18,7 @@ public class WallTileController : MonoBehaviour
     }
 
     //should return true if any action is performed
-    public virtual bool Interact(Coords2 coords, PlayerMovement player)
+    public virtual bool Interact(Coords2 coords, Player player)
     {
         return false;
     }

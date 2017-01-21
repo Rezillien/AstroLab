@@ -72,7 +72,7 @@ public class AmmoPickup : PickupItem {
         return ammoLeft;
     }
 
-    public override bool Interact(PlayerMovement player)
+    public override bool Interact(Player player)
     {
         if (isDead()) return false;
 
