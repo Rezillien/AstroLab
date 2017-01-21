@@ -63,7 +63,12 @@ public class Player : MonoBehaviour
         if (Input.GetKey("a")) dx = -1;
         if (Input.GetKey("s")) dy = -1;
         if (Input.GetKey("d")) dx = 1;
-
+        if (Input.GetKeyDown("p"))
+        {
+            GameObject a = Instantiate(GameManager.instance.GetPrefabs().enginePrefab);
+            a.GetComponent<EngineObjectController>().Interact(new Coords2(0, 0), this);
+                
+        }
 
         //////changes
         // if(Input.GetKey("y")) SceneManager.LoadScene("Minigame1", LoadSceneMode.Single);
