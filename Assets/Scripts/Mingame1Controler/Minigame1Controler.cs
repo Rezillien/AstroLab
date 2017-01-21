@@ -3,19 +3,21 @@ using System.Collections;
 
 public class Minigame1Controler : MonoBehaviour {
 
-    //private TemperatureControler temperatureControler;
+    private TemperatureControl temperatureControl;
     private ScrewControler screwControler;
     public GameObject screwPrefab;
+    public GameObject temperaturePrefab;
     // Use this for initialization
     void Start () {
         screwControler = Instantiate(screwPrefab).GetComponent<ScrewControler>();
-        //temperatureControler = Instantiate(Prefabs).GetComponent<TemperatureControl>();
-        //temperatureControler = new TemperatureControler();
+        temperatureControl = Instantiate(temperaturePrefab).GetComponent<TemperatureControl>();
+        
 	}
 	
 	// Update is called once per frame
 	void Update () {
-       // temperatureControler.setTemperature(screwControler.getPosition);
-	}
+        //temperatureControl.setTemperature(screwControler.getPosition());
+        temperatureControl.Resize(screwControler.getPosition());
+    }
 
 }

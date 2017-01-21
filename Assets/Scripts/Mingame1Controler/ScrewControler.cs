@@ -4,7 +4,10 @@ using System.Collections;
 public class ScrewControler : MonoBehaviour {
 
     private int initKeyPosition = 3;
-  
+    private bool broken = false;
+
+    private TemperatureControl temperatureControl;
+
     // Use this for initialization
     void Start () {
 	    
@@ -15,17 +18,25 @@ public class ScrewControler : MonoBehaviour {
 
         System.Random randomGenerator = new System.Random();
         int move=0;
-        if (Input.GetKeyDown("up") || Input.GetKeyDown("down"))
+        if ((Input.GetKeyDown("up") || Input.GetKeyDown("down")) && !broken)
         {
+            int rnd = randomGenerator.Next(1, 7);
+            if (initKeyPosition + rnd > 30)
+                broken = true;
             if (Input.GetKeyDown("up"))
             {
-                move = randomGenerator.Next(1, 3);
+                move = rnd;
             }
             if (Input.GetKeyDown("down"))
             {
-                move = -1 * (randomGenerator.Next(1, 3));
+                move = -1 * rnd;
             }
             initKeyPosition += move;
+            if (initKeyPosition < 0)
+            {
+                move -= initKeyPosition;
+                initKeyPosition = 0;
+            }
             rotate(move);
             
         }
@@ -35,11 +46,16 @@ public class ScrewControler : MonoBehaviour {
 
     private void rotate(int rotation)
     {
-        transform.Rotate(Vector3.forward * 30 * rotation);
+        transform.Rotate(Vector3.forward * 10 * rotation);
     }
 
     public int getPosition()
     {
         return initKeyPosition;
+    }
+
+    public void getTemperatureControl(TemperatureControl temperatureControl)
+    {
+        this.temperatureControl = temperatureControl;
     }
 }
