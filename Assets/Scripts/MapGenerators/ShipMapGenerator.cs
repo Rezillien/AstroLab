@@ -122,6 +122,14 @@ public class ShipMapGenerator : MapGenerator
 
         InstantiateTiles();
 
+        map.AddPickupItem(
+            AmmoPickup.CreateFromPrefab(
+                prefabs.ammoPickupPrefab,
+                new Vector2(width / 2.0f, height / 2.0f),
+                24,
+                0
+            )
+            );
 
         map.startX = width / 2;
         map.startY = height / 2;

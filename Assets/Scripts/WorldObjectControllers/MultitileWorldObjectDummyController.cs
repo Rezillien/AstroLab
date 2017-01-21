@@ -10,7 +10,7 @@ public class MultitileWorldObjectDummyController : WorldObjectController
         ownerController = newOwner.GetComponent<WorldObjectController>();
     }
 
-    public override bool Interact(Coords2 coords, GameObject player)
+    public override bool Interact(Coords2 coords, PlayerMovement player)
     {
         return ownerController.Interact(coords, player);
     }

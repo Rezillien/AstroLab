@@ -12,6 +12,7 @@ public class Prefabs : MonoBehaviour
     public GameObject scenePrefab;
     public GameObject enginePrefab;
     public GameObject serverPrefab;
+    public GameObject ammoPickupPrefab;
 
     public GameObject multitileWorldObjectDummy;
     public GameObject multitileWallDummy;

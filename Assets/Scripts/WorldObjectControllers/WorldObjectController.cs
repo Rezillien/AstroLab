@@ -16,7 +16,7 @@ public class WorldObjectController : MonoBehaviour
     }
 
     //should return true if any action is performed
-    public virtual bool Interact(Coords2 coords, GameObject player)
+    public virtual bool Interact(Coords2 coords, PlayerMovement player)
     {
         return false;
     }

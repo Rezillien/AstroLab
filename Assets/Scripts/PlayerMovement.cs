@@ -8,6 +8,8 @@ public class PlayerMovement : MonoBehaviour
     public int x;
     public int y;
 
+    private int[] ammo;
+
     SmoothTransition moveAnimation;
 
     void Awake()
@@ -18,6 +20,9 @@ public class PlayerMovement : MonoBehaviour
 
         //no animation to start with
         moveAnimation = null;
+
+        ammo = new int[AmmoPickup.NumberOfAmmoTypes];
+        Util.Fill(ammo, 0);
     }
 
     public void SetPosition(int _x, int _y)
@@ -69,6 +74,7 @@ public class PlayerMovement : MonoBehaviour
     //returns true on success
     private bool TryInteract()
     {
+        //TODO: interaction using mouse, this may be temporary
         Map map = GameManager.instance.GetMap();
 
         int dx = 0;
@@ -78,10 +84,16 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown("a")) dx = -1;
         if (Input.GetKeyDown("s")) dy = -1;
         if (Input.GetKeyDown("d")) dx = 1;
-
-        if (dx != 0 || dy != 0)
+        if (Input.GetKeyDown("e"))
         {
-            if (map.Interact(new Coords2(x + dx, y + dy), gameObject))
+            if (map.Interact(new Vector2(x, y), this))
+            {
+                return true;
+            }
+        }
+        else if (dx != 0 || dy != 0)
+        {
+            if (map.Interact(new Coords2(x + dx, y + dy), this))
             {
                 return true;
             }
@@ -121,5 +133,14 @@ public class PlayerMovement : MonoBehaviour
                 EndTurn();
             }
         }
+    }
+
+    public bool UseAmmoPickup(AmmoPickup ammoPickup)
+    {
+        int type = ammoPickup.GetAmmoType();
+        ammo[type] += ammoPickup.GetAmmoCount(); //TODO: ammo count limitation
+        ammoPickup.SetAmmoCount(0);
+
+        return true;
     }
 }

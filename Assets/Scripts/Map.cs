@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using Random = UnityEngine.Random;
+using System;
 
 public class Map : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class Map : MonoBehaviour
     private GameObject[,] floorTileLayer;
     private GameObject[,] wallTileLayer;
     private GameObject[,] worldObjectLayer;
+    private PickupSystem pickupSystem;
 
     //generates map using given generator
     void GenerateMap(MapGenerator mapGenerator)
@@ -24,6 +26,7 @@ public class Map : MonoBehaviour
         floorTileLayer = new GameObject[width, height];
         wallTileLayer = new GameObject[width, height];
         worldObjectLayer = new GameObject[width, height];
+        pickupSystem = new PickupSystem();
 
         mapGenerator.Generate(this);
 
@@ -75,7 +78,7 @@ public class Map : MonoBehaviour
     }
 
     //requires wall to have wallcontroler
-    private bool InteractWall(Coords2 coords, GameObject player)
+    private bool InteractWall(Coords2 coords, PlayerMovement player)
     {
         GameObject tile = GetWallTile(coords);
         if (tile == null) return false;
@@ -90,7 +93,7 @@ public class Map : MonoBehaviour
 
     //requires object to have worldobjectcontroller
     //should be called when wallobjectcontroller.interact returns false or is not called
-    private bool InteractObject(Coords2 coords, GameObject player)
+    private bool InteractObject(Coords2 coords, PlayerMovement player)
     {
         GameObject tile = GetWorldObject(coords);
         if (tile == null) return false;
@@ -101,9 +104,23 @@ public class Map : MonoBehaviour
         return controller.Interact(coords, player);
     }
     
-    public bool Interact(Coords2 coords, GameObject player)
+    public bool Interact(Coords2 coords, PlayerMovement player)
     {
         return InteractWall(coords, player) || InteractObject(coords, player);
+    }
+
+    public bool Interact(Vector2 position, PlayerMovement player)
+    {
+        Coords2 coords = new Coords2(Mathf.FloorToInt(position.x + 0.5f), Mathf.FloorToInt(position.y + 0.5f));
+        if (Interact(coords, player)) return true;
+
+        return InteractWithPickupItems(position, player);
+
+    }
+
+    private bool InteractWithPickupItems(Vector2 position, PlayerMovement player)
+    {
+        return pickupSystem.OnInteractionAttempt(position, player);
     }
 
     //only sets reference to passed tile
@@ -260,5 +277,20 @@ public class Map : MonoBehaviour
     public void Setup(MapGenerator mapGenerator)
     {
         GenerateMap(mapGenerator);
+    }
+
+    public void AddPickupItem(PickupItem item)
+    {
+        pickupSystem.AddPickup(item);
+    }
+
+    void Update()
+    {
+        pickupSystem.Update();
+    }
+
+    void FixedUpdate()
+    {
+        pickupSystem.FixedUpdate();
     }
 }

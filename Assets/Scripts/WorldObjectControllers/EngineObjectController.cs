@@ -14,7 +14,7 @@ public class EngineObjectController : ReparableObjectController
         //this.status=
     }
     
-    public override bool Interact(Coords2 coords, GameObject player)
+    public override bool Interact(Coords2 coords, PlayerMovement player)
     {
         
         PlayMiniGame();

@@ -10,7 +10,7 @@ public class MultitileWallDummyController : WallTileController {
         ownerController = newOwner.GetComponent<WallTileController>();
     }
     
-    public override bool Interact(Coords2 coords, GameObject player)
+    public override bool Interact(Coords2 coords, PlayerMovement player)
     {
         return ownerController.Interact(coords, player);
     }

@@ -13,4 +13,11 @@ public static class Util
             }
         }
     }
+    public static void Fill<T>(T[] array, T value)
+    {
+        for (int x = 0; x < array.Length; ++x)
+        {
+            array[x] = value;
+        }
+    }
 }

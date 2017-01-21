@@ -19,7 +19,7 @@ public class DirtController : WallTileController
 	
 	}
 
-    public override bool Interact(Coords2 coords, GameObject player)
+    public override bool Interact(Coords2 coords, PlayerMovement player)
     {
         spriteRenderer.sprite = dirtSprite[dirtState];
         if(dirtState > 0) { dirtState--; }
