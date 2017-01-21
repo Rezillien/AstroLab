@@ -46,10 +46,10 @@ public class Player : MonoBehaviour
         int dx = 0;
         int dy = 0;
 
-        if (Input.GetKey("up")) dy = 1;
-        if (Input.GetKey("left")) dx = -1;
-        if (Input.GetKey("down")) dy = -1;
-        if (Input.GetKey("right")) dx = 1;
+        if (Input.GetKey("w")) dy = 1;
+        if (Input.GetKey("a")) dx = -1;
+        if (Input.GetKey("s")) dy = -1;
+        if (Input.GetKey("d")) dx = 1;
 
 
         //////changes
@@ -77,26 +77,12 @@ public class Player : MonoBehaviour
         //TODO: interaction using mouse, this may be temporary
         Map map = GameManager.instance.GetMap();
 
-        int dx = 0;
-        int dy = 0;
-
-        if (Input.GetKeyDown("w")) dy = 1;
-        if (Input.GetKeyDown("a")) dx = -1;
-        if (Input.GetKeyDown("s")) dy = -1;
-        if (Input.GetKeyDown("d")) dx = 1;
-        if (Input.GetKeyDown("e"))
+        Vector3 worldPos3 = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 worldPos = new Vector2(worldPos3.x, worldPos3.y);
+        
+        if (Input.GetMouseButtonDown(1)) //right click
         {
-            if (map.Interact(new Vector2(x, y), this))
-            {
-                return true;
-            }
-        }
-        else if (dx != 0 || dy != 0)
-        {
-            if (map.Interact(new Coords2(x + dx, y + dy), this))
-            {
-                return true;
-            }
+            return map.Interact(worldPos, this);
         }
 
         return false;

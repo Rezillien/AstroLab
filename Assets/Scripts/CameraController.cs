@@ -24,7 +24,7 @@ public class CameraController : MonoBehaviour
     {
         mousePositionFirst = mousePositionSecond;
         mousePositionSecond = Input.mousePosition;
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButton(2)) //middle mouse button
         {
             Vector3 worldPosFirst = Camera.main.ScreenToWorldPoint(mousePositionFirst);
             Vector3 worldPosSecond = Camera.main.ScreenToWorldPoint(mousePositionSecond);

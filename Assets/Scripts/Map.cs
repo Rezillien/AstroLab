@@ -103,20 +103,30 @@ public class Map : MonoBehaviour
 
         return controller.Interact(coords, player);
     }
-    
-    public bool Interact(Coords2 coords, Player player)
+
+    public bool InteractWithTiles(Coords2 coords, Player player)
     {
         return InteractWall(coords, player) || InteractObject(coords, player);
     }
 
     public bool Interact(Vector2 position, Player player)
     {
-        //this should be done only when player is not standing on the interacted tile
-        //Coords2 coords = new Coords2(Mathf.FloorToInt(position.x + 0.5f), Mathf.FloorToInt(position.y + 0.5f));
-        //if (Interact(coords, player)) return true;
+        const float pickupInteractRange = 1.5f;
 
-        return InteractWithPickupItems(position, player);
+        Coords2 coords = new Coords2(Mathf.FloorToInt(position.x + 0.5f), Mathf.FloorToInt(position.y + 0.5f));
+        Coords2 playerCoords = new Coords2(player.x, player.y);
+        Coords2 dist = (coords - playerCoords).Abs();
+        if (dist.x + dist.y == 1) //exactly one tile away in one of four directions
+        {
+            if (InteractWithTiles(coords, player)) return true;
+        }
 
+        if((position - new Vector2(player.x, player.y)).magnitude <= pickupInteractRange)
+        {
+            return InteractWithPickupItems(position, player);
+        }
+
+        return false;
     }
 
     private bool InteractWithPickupItems(Vector2 position, Player player)
@@ -199,7 +209,7 @@ public class Map : MonoBehaviour
     {
         if (!IsInsideBounds(coords)) return;
         if (layer[coords.x, coords.y] == null) return;
-        
+
         Destroy(layer[coords.x, coords.y]);
         layer[coords.x, coords.y] = null;
     }
