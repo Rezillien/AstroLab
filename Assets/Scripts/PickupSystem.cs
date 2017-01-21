@@ -50,6 +50,13 @@ public class PickupSystem {
 
     private void DeleteDeadPickups()
     {
-        pickups.RemoveAll(item => item.isDead());
+        foreach (PickupItem pickup in pickups)
+        {
+            if (pickup.IsDead())
+            {
+                UnityEngine.Object.Destroy(pickup.gameObject);
+            }
+        }
+        pickups.RemoveAll(item => item.IsDead());
     }
 }

@@ -6,8 +6,7 @@ public class Mover : MonoBehaviour
 {
     public GameObject dirt;
     public float speed;
-
-    private GameObject diirt;
+    
     private SmoothTransition moveAnimation;
     private Map map;
     private int dx, dy;

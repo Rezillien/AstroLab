@@ -18,7 +18,7 @@ public class PickupItem : MonoBehaviour {
     {
         return false;
     }
-    public virtual bool isDead()
+    public virtual bool IsDead()
     {
         return true;
     }

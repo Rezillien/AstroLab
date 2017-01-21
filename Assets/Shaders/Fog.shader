@@ -61,7 +61,7 @@
 
     float4 raycastColor(float2 t0, float2 t1, float contribution)
     {
-        int iterations = 64;
+        int iterations = 32;
 
         float4 c1;
         float2 dt = (t1 - t0) / (float)iterations; //step size

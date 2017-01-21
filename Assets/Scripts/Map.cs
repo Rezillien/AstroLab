@@ -19,6 +19,7 @@ public class Map : MonoBehaviour
     private GameObject[,] wallTileLayer;
     private GameObject[,] worldObjectLayer;
     private PickupSystem pickupSystem;
+    private BulletSystem bulletSystem;
 
     //generates map using given generator
     void GenerateMap(MapGenerator mapGenerator)
@@ -27,6 +28,7 @@ public class Map : MonoBehaviour
         wallTileLayer = new GameObject[width, height];
         worldObjectLayer = new GameObject[width, height];
         pickupSystem = new PickupSystem();
+        bulletSystem = new BulletSystem();
 
         mapGenerator.Generate(this);
 
@@ -294,14 +296,18 @@ public class Map : MonoBehaviour
     {
         pickupSystem.AddPickup(item);
     }
+    public void AddBullet(BulletController bullet)
+    {
+        bulletSystem.AddBullet(bullet);
+    }
 
     void Update()
     {
-        pickupSystem.Update();
     }
 
     void FixedUpdate()
     {
         pickupSystem.FixedUpdate();
+        bulletSystem.FixedUpdate();
     }
 }

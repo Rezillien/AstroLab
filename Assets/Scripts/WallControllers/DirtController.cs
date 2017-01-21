@@ -24,6 +24,10 @@ public class DirtController : WallTileController
         spriteRenderer.sprite = dirtSprite[dirtState];
         if(dirtState > 0) { dirtState--; }
         else { isDestroyed = true; }
+        if(isDestroyed)
+        {
+            GameManager.instance.GetMap().RemoveWallTile(coords);
+        }
         return true;
     }
 

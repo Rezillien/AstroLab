@@ -33,11 +33,7 @@ public class AmmoPickup : PickupItem {
 	
 	// Update is called once per frame
 	void Update() {
-	    if(isDead())
-        {
-            sprite.enabled = false;
-        }
-        else
+	    if(!IsDead())
         {
             sprite.transform.position = new Vector3(position.x, position.y);
         }
@@ -74,12 +70,12 @@ public class AmmoPickup : PickupItem {
 
     public override bool Interact(Player player)
     {
-        if (isDead()) return false;
+        if (IsDead()) return false;
 
         return player.UseAmmoPickup(this);
     }
 
-    public override bool isDead()
+    public override bool IsDead()
     {
         return ammoLeft == 0;
     }
