@@ -30,7 +30,7 @@
         half2 texcoord : TEXCOORD0;
     };
 
-    int _TextureSize;
+    float _TextureSize;
     float4 _PlayerPos;
     sampler2D _MainTex;
     float4 _MainTex_ST;
@@ -61,13 +61,14 @@
 
     float4 raycastColor(float2 t0, float2 t1, float contribution)
     {
-        int iterations = 32;
+        int iterations = 8;
 
         float4 c1;
         float2 dt = (t1 - t0) / (float)iterations; //step size
-        float dtlen = length(dt);
-        float solidBlocking = 200; // light blocking coeficient of solids
-        float airBlocking = 5; // light blocking coeficient of air
+        float dtlen = length(dt) * _TextureSize;
+        float len = length(t1 - t0) * _TextureSize;
+        float solidBlocking = 5; // light blocking coeficient of solids
+        float airBlocking = 0.13; // light blocking coeficient of air
         float2 t = t0;
         float opacity = 0;   //initially transparent
 
@@ -79,7 +80,7 @@
 
             t += dt;
         }
-        opacity += airBlocking * length(t1 - t0);
+        opacity += airBlocking * len;
         
         return float4(0.0, 0.0, 0.0, opacity + (1.0 - opacity) * (1.0 - contribution));
     }

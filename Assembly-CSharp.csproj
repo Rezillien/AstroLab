@@ -82,6 +82,7 @@
      <Compile Include="Assets\Scripts\WallControllers\WallTileController.cs" />
      <Compile Include="Assets\Scripts\Weapons\BulletController.cs" />
      <Compile Include="Assets\Scripts\Weapons\DirtBullet.cs" />
+     <Compile Include="Assets\Scripts\Weapons\Rocket.cs" />
      <Compile Include="Assets\Scripts\Weapons\SimpleBullet.cs" />
      <Compile Include="Assets\Scripts\Weapons\SimpleWeaponController.cs" />
      <Compile Include="Assets\Scripts\Weapons\WeaponController.cs" />

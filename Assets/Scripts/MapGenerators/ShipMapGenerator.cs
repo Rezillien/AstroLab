@@ -133,7 +133,7 @@ public class ShipMapGenerator : MapGenerator
             AmmoPickup.CreateFromPrefab(
                 prefabs.ammoPickupPrefab,
                 new Vector2(randomPos.x, randomPos.y),
-                24,
+                2400,
                 0
             )
             );

@@ -224,6 +224,7 @@ public class Map : MonoBehaviour
     public void RemoveWallTile(Coords2 coords)
     {
         RemoveTile(coords, wallTileLayer);
+        OnWallTileChanged(coords);
     }
     public void RemoveWorldObject(Coords2 coords)
     {

@@ -57,7 +57,7 @@ public class FogController : MonoBehaviour
         //to render in correct order (closer to the camera, after board is rendered)
         material.renderQueue = 3005;
         material.mainTexture = texture;
-        material.SetInt(Shader.PropertyToID("_TextureSize"), textureSize);
+        material.SetFloat(Shader.PropertyToID("_TextureSize"), textureSize);
 
         //retrieve and set uniform ids for later use
         cameras = new Dictionary<Coords2, Camera>();
